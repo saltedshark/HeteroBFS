@@ -1,7 +1,8 @@
-# 忽略 data 目录下的所有内容
-data/**
-# 忽略 bin 目录下的所有内容
-bin/**
+# 忽略 data 和 bin 目录下的所有内容（但保留目录本身）
+data/*
+!data/.gitkeep
+bin/*
+!bin/.gitkeep
 
 # 忽略所有平台的可执行文件
 # Unix/Linux 可执行文件（无扩展名）
