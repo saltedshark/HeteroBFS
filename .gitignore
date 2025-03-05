@@ -1,0 +1,39 @@
+# 忽略 data 目录下的所有内容
+data/**
+# 忽略 bin 目录下的所有内容
+bin/**
+
+# 忽略所有平台的可执行文件
+# Unix/Linux 可执行文件（无扩展名）
+*.[oa]
+*.so
+*.ko
+*.dll
+*.exe
+*.exe,*.dll,*.so,*.dylib
+*.pyc
+*.bin
+*.out
+*.app
+*.jar
+*.dylib
+*.class
+
+# 其他常见可执行格式
+*.bat
+*.cmd
+*.com
+*.msi
+*.msm
+*.msp
+*.scr
+*.sh
+*.vbscript
+*.cgi
+*.egg
+
+# 编译产物
+*.o
+*.obj
+*.d
+*.lib
