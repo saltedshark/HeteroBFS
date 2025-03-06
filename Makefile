@@ -2,13 +2,14 @@
 CXX := g++
 CXXFLAGS := -std=c++11 -Wall
 LDFLAGS := -lpthread
-# CXXFLAGS := -std=c++11 -Wall -fopenmp
-# LDFLAGS := -lpthread -lgomp
+
+# OpenMP编译选项
+OMP_CXXFLAGS := -fopenmp
+OMP_LDFLAGS := -lgomp
 
 # SNAP库路径
 SNAP_CORE := extern/snap/snap-core
 SNAP_LIB := $(SNAP_CORE)/libsnap.a
-#SNAP_INCLUDES := -I$(SNAP_CORE)
 SNAP_INCLUDES := -Iextern/snap/glib-core -I$(SNAP_CORE)
 SNAP_LDFLAGS := -L$(SNAP_CORE) -lsnap $(LDFLAGS)
 SNAP_CXXFLAGS := -fopenmp      # 仅SNAP程序需要的编译选项
@@ -20,21 +21,30 @@ BIN_DIR := bin
 SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
 EXECUTABLES := $(patsubst $(SRC_DIR)/%.cpp, $(BIN_DIR)/%, $(SOURCES))
 
+
+# OpenMP程序列表，需要使用openmp但不使用snap库
+OPENMP_PROGRAMS := bfs_omp   # 需要OpenMP但不依赖SNAP的程序
 # 需要链接SNAP的程序列表（匹配目标名，如bin/testsnap对应testsnap）
 SNAP_PROGRAMS := testsnap graph_gen
 
 # 主目标：编译所有程序
 all: $(EXECUTABLES)
 
-# 定义静态模式规则：仅对SNAP_PROGRAMS中的程序应用SNAP规则
-$(foreach prog,$(SNAP_PROGRAMS),$(BIN_DIR)/$(prog)): $(BIN_DIR)/%: $(SRC_DIR)/%.cpp $(SNAP_LIB) | $(BIN_DIR)
-	@echo "=== 编译需要SNAP的程序：$@（启用OpenMP） ==="
-	$(CXX) $(CXXFLAGS) $(SNAP_CXXFLAGS) $(SNAP_INCLUDES) $< -o $@ $(SNAP_LDFLAGS) $(LDFLAGS)
+# OpenMP程序规则
+$(foreach prog,$(OPENMP_PROGRAMS),$(BIN_DIR)/$(prog)): $(BIN_DIR)/%: $(SRC_DIR)/%.cpp | $(BIN_DIR)
+	@echo "=== 编译OpenMP程序：$@ ==="
+	$(CXX) $(CXXFLAGS) $(OMP_CXXFLAGS) $< -o $@ $(OMP_LDFLAGS) $(LDFLAGS)
 
-# 普通程序编译规则（排除SNAP_PROGRAMS中的程序）
-$(filter-out $(foreach prog,$(SNAP_PROGRAMS),$(BIN_DIR)/$(prog)),$(EXECUTABLES)): $(BIN_DIR)/%: $(SRC_DIR)/%.cpp | $(BIN_DIR)
+# SNAP程序规则
+$(foreach prog,$(SNAP_PROGRAMS),$(BIN_DIR)/$(prog)): $(BIN_DIR)/%: $(SRC_DIR)/%.cpp $(SNAP_LIB) | $(BIN_DIR)
+	@echo "=== 编译SNAP程序：$@ ==="
+	$(CXX) $(CXXFLAGS) $(OMP_CXXFLAGS) $(SNAP_INCLUDES) $< -o $@ $(SNAP_LDFLAGS) $(LDFLAGS)
+
+# 普通程序规则（排除前两类）
+$(filter-out $(foreach p,$(SNAP_PROGRAMS) $(OPENMP_PROGRAMS),$(BIN_DIR)/$(p)),$(EXECUTABLES)): $(BIN_DIR)/%: $(SRC_DIR)/%.cpp | $(BIN_DIR)
 	@echo "=== 编译普通程序：$@ ==="
 	$(CXX) $(CXXFLAGS) $< -o $@ $(LDFLAGS)
+
 
 # 创建输出目录
 $(BIN_DIR):

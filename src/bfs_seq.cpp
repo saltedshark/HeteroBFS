@@ -1,22 +1,21 @@
 /***
- * 仿照Altis中的模块化bfs代码，修改本处的bfs代码；
- * 增加了initGraph函数用于读文件建图；
- * 修改s_bfs更模块化
+ * 函数功能：使用基于队列的版本对图进行遍历，不管图有没有连通
+ * 更新：将涉及vector的数组全换为普通数组
+ * 
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+using std::string;
 #include <chrono>
 using namespace std::chrono;
 #include <iostream>
-using std::string;
 #include <queue>
-
 #include <iostream>
 #include <fstream>
-#include <vector>
 #include <cstdint>
 #include <iomanip>// 用于十六进制输出
+#include <cstring> //for memset
 
 // CSR二进制文件头（兼容Gunrock）
 struct CSRHeader {
@@ -39,17 +38,17 @@ void Usage(int argc, char**argv){
 
 
 //initGraph负责从csr.bin的文件内读取信息，校验后从文件头获取节点数、边数信息(这里的边数已经是edges数组大小，无需再乘以2)，然后读取offset和edges数组
-void initGraph(const string &filename, int &no_of_nodes, int &edge_list_size, std::vector<uint32_t> &offsets, std::vector<uint32_t> &edges);
+void initGraph(const string &filename, int &no_of_nodes, int &edge_list_size, uint32_t *&offsets, uint32_t *&edges);
 
 //再增加一层中间层，用于从外层遍历不同节点，判断访问与否，未访问则进入bfs_queue调用
 //状态数组创建应该放到这里
 //传入4个参数:节点数，边表大小，offsets和edges，节点编号从0起
-void seq(int no_of_nodes, int edge_list_size, std::vector<uint32_t> &offsets, std::vector<uint32_t> &edges);
+void seq(int no_of_nodes, int edge_list_size, uint32_t *&offsets, uint32_t *&edges);
 
 //该函数按source进入遍历,需要将seq内创建的状态相关数组及存储结果的数组传进去
 void bfs_queue( int no_of_nodes, int source,
-	std::vector<uint32_t> &offsets, std::vector<uint32_t> &edges, 
-	std::vector<bool> &h_graph_visited, std::vector<int> &h_cost);
+	uint32_t *&offsets, uint32_t *&edges, 
+	bool *&h_graph_visited, int *&h_cost);
 
 
 int main(int argc, char** argv){
@@ -68,8 +67,10 @@ int main(int argc, char** argv){
 	printf("Running bfs_seq\n");
 	int no_of_nodes = 0;
 	int edge_list_size = 0;
-    std::vector<uint32_t> offsets;
-    std::vector<uint32_t> edges;
+    
+    uint32_t *offsets;
+    uint32_t *edges;
+
     //读文件获取信息
 	initGraph(filename, no_of_nodes, edge_list_size, offsets, edges);
 	//执行passes次
@@ -77,11 +78,16 @@ int main(int argc, char** argv){
 		printf("Pass %d:\n",i);
 		seq(no_of_nodes, edge_list_size, offsets, edges);
 	}
+
+    //清理内存
+    free(offsets);
+    free(edges);
+
 	return 0;
 }
 
 
-void initGraph(const string &filename, int &no_of_nodes, int &edge_list_size, std::vector<uint32_t> &offsets, std::vector<uint32_t> &edges){
+void initGraph(const string &filename, int &no_of_nodes, int &edge_list_size, uint32_t *&offsets, uint32_t *&edges){
 	
     std::ifstream ifs(filename, std::ios::binary);
     if (!ifs) {
@@ -117,15 +123,18 @@ void initGraph(const string &filename, int &no_of_nodes, int &edge_list_size, st
     no_of_nodes = header.num_nodes;
     edge_list_size = header.num_edges;
 
-    offsets.reserve(header.num_nodes + 1);
-    edges.reserve(header.num_edges);
+    // offsets.reserve(header.num_nodes + 1);
+    // edges.reserve(header.num_edges);
+    offsets = (uint32_t*) malloc(sizeof(uint32_t) * (no_of_nodes+1));//offset需要多分配1个
+    edges = (uint32_t*) malloc(sizeof(uint32_t) * edge_list_size);
+
     // 读取偏移数组
-    ifs.read(reinterpret_cast<char*>(offsets.data()), 
-            (header.num_nodes + 1) * sizeof(uint32_t));
+    ifs.read(reinterpret_cast<char*>(offsets), 
+            (no_of_nodes + 1) * sizeof(uint32_t));
 
     // 读取边索引
-    ifs.read(reinterpret_cast<char*>(edges.data()), 
-            header.num_edges * sizeof(uint32_t));
+    ifs.read(reinterpret_cast<char*>(edges), 
+            no_of_nodes * sizeof(uint32_t));
 
     // 验证读取完整性
     if (!ifs) {
@@ -137,7 +146,7 @@ void initGraph(const string &filename, int &no_of_nodes, int &edge_list_size, st
 }
 
 //剩下的mask,visited,cost等与输出相关的数组在s_bfs内再创建，不然会影响多次执行
-void seq(int no_of_nodes, int edge_list_size, std::vector<uint32_t> &offsets, std::vector<uint32_t> &edges){
+void seq(int no_of_nodes, int edge_list_size, uint32_t *&offsets, uint32_t *&edges){
 	//该函数功能:
 	//分配1个状态相关数组和1个存结果数组，并进行初始化
 	//判断节点未访问后调用bfs_queu进行具体节点开始打遍历
@@ -149,9 +158,12 @@ void seq(int no_of_nodes, int edge_list_size, std::vector<uint32_t> &offsets, st
 
 	//allocate host memory
 	//状态相关的数组，visited
-    std::vector<bool> h_graph_visited(no_of_nodes, false);
+    bool *h_graph_visited = (bool*) malloc(sizeof(bool)*no_of_nodes);
 	// allocate mem for the result on host side
-    std::vector<int> h_cost(no_of_nodes, -1);
+    int *h_cost = (int*) malloc( sizeof(int)*no_of_nodes);
+    //初始化相关数组
+    memset(h_graph_visited, 0, no_of_nodes * sizeof(bool));
+    memset(h_cost, -1, no_of_nodes * sizeof(int));
 
 	//遍历所有节点，未访问就进入遍历
 	for(int i = 0; i < no_of_nodes; i++){
@@ -167,11 +179,14 @@ void seq(int no_of_nodes, int edge_list_size, std::vector<uint32_t> &offsets, st
     auto duration = duration_cast<microseconds>(end_t - start_t);
     double total_time = double(duration.count()) * microseconds::period::num / microseconds::period::den;
     printf("total_time is %f seconds\n", total_time);
+    //清理内存
+    free(h_graph_visited);
+    free(h_cost);
 }
 
 void bfs_queue( int no_of_nodes, int source,
-	std::vector<uint32_t> &offsets, std::vector<uint32_t> &edges, 
-	std::vector<bool> &h_graph_visited, std::vector<int> &h_cost){
+	uint32_t *&offsets, uint32_t *&edges, 
+	bool *&h_graph_visited, int *&h_cost){
 	//函数功能
 	//设置源点相关状态
 	//使用队列遍历source开始的连通块
@@ -182,7 +197,7 @@ void bfs_queue( int no_of_nodes, int source,
 
 
 	//使用队列进行访问
-	std::queue<uint32_t> q;;//存储未访问编号即可，不用存node
+	std::queue<uint32_t> q;
     q.push(source);
 	while (!q.empty()) {
         uint32_t current = q.front();
