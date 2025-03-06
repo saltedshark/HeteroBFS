@@ -95,7 +95,7 @@ void GenerateERGraphForGunrock(int64_t num_nodes, int avg_degree) {
     // 生成文件名
     std::string filename = "graph" + FormatNodeCount(num_nodes) + 
                           "_d" + std::to_string(avg_degree) + 
-                          "_gunrock.csr";
+                          "_gunrock.csr.bin";
 
     // 写入二进制文件
     std::ofstream ofs(filename, std::ios::binary);
@@ -106,9 +106,7 @@ void GenerateERGraphForGunrock(int64_t num_nodes, int avg_degree) {
     ofs.write(reinterpret_cast<const char*>(offsets.data()), offsets.size() * sizeof(uint32_t));
     ofs.write(reinterpret_cast<const char*>(edges.data()), edges.size() * sizeof(uint32_t));
     
-    std::cout << "成功生成图文件: " << filename << "\n"
-              << "  节点数: " << num_nodes << "\n"
-              << "  边数: " << edges.size() << std::endl;
+    std::cout << "成功生成图文件: " << filename << std::endl;
 }
 
 int main(int argc, char* argv[]) {
