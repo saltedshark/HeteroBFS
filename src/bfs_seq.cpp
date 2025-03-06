@@ -134,7 +134,7 @@ void initGraph(const string &filename, int &no_of_nodes, int &edge_list_size, ui
 
     // 读取边索引
     ifs.read(reinterpret_cast<char*>(edges), 
-            no_of_nodes * sizeof(uint32_t));
+            edge_list_size * sizeof(uint32_t));
 
     // 验证读取完整性
     if (!ifs) {

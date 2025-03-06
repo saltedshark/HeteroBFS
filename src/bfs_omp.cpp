@@ -20,8 +20,12 @@ using namespace std::chrono;
 #include <vector>
 
 
-#define USE_OPTIMIZE 0
-//0表示未优化
+#define OPTIMIZE_LEVEL 2
+//优化等级
+//分0,1,2，3
+//0 for 原始版本
+//1 for 将当前层与下一层状态修改分开
+//2 for 在原始版本基础上使用局部缓存去除原子竞争
 
 // CSR二进制文件头（兼容Gunrock）
 struct CSRHeader {
@@ -39,7 +43,7 @@ void PrintHex(const char* label, uint32_t value) {
 }
 
 void Usage(int argc, char**argv){
-	fprintf(stderr,"Usage: %s <passes>  <num_omp_threads> <input_file>\n", argv[0]);
+	fprintf(stderr,"Usage: %s <passes> <num_omp_threads> <input_file>\n", argv[0]);
 }
 
 
@@ -52,16 +56,23 @@ void initGraph(const string &filename, int &no_of_nodes, int &edge_list_size, ui
 void omp(int no_of_nodes, int edge_list_size, uint32_t *&offsets, uint32_t *&edges, int num_omp_threads);
 
 //该函数按source进入遍历,需要将seq内创建的状态相关数组及存储结果的数组传进去
+//版本1,有原子操作
 void bfs_omp( int no_of_nodes, int source,
         uint32_t *&offsets, uint32_t *&edges, 
         bool *&h_graph_mask, bool *&h_updating_graph_mask,
-        bool *&h_graph_visited, int *&h_cost, int num_omp_threads);
+        bool *&h_graph_visited, int *&h_cost);
+//版本2, h_graph_mask与h_updating_mask分开
+void bfs_omp_apart( int no_of_nodes, int source,
+            uint32_t *&offsets, uint32_t *&edges, 
+            bool *&h_graph_mask, bool *&h_updating_graph_mask,
+            bool *&h_graph_visited, int *&h_cost);     
 
-//优化版本，使用本地缓存去除原子操作
+//优化版本，在版本1基础上使用本地缓存去除原子操作
 void bfs_omp_optimized( int no_of_nodes, int source,
             uint32_t *&offsets, uint32_t *&edges, 
             bool *&h_graph_mask, bool *&h_updating_graph_mask,
             bool *&h_graph_visited, int *&h_cost, int num_omp_threads);
+
 int main(int argc, char** argv){
 	//int num_omp_threads;
 	int passes = 10;//程序执行次数,默认为10
@@ -77,6 +88,7 @@ int main(int argc, char** argv){
     string filename = argv[3];//文件名称
 
 	printf("Running bfs_omp\n");
+
 	int no_of_nodes = 0;
 	int edge_list_size = 0;
     
@@ -120,7 +132,7 @@ void initGraph(const string &filename, int &no_of_nodes, int &edge_list_size, ui
     }
     // 校验数据合理性
     if (header.num_nodes == 0 || header.num_edges == 0) {
-        std::cerr << "文件头数据异常: 节点数=" << header.num_nodes 
+        std::cerr << std::dec << "文件头数据异常: 节点数=" << header.num_nodes 
                   << " 边数=" << header.num_edges << std::endl;
         exit(0);
     }
@@ -133,10 +145,9 @@ void initGraph(const string &filename, int &no_of_nodes, int &edge_list_size, ui
     std::cout << "填充字段: " << header._padding << std::endl;
 
     no_of_nodes = header.num_nodes;
-    edge_list_size = header.num_edges;
+    edge_list_size = header.num_edges;//头文件内的num_edges已经算是实际边数的双倍了
 
-    // offsets.reserve(header.num_nodes + 1);
-    // edges.reserve(header.num_edges);
+    
     offsets = (uint32_t*) malloc(sizeof(uint32_t) * (no_of_nodes+1));//offset需要多分配1个
     edges = (uint32_t*) malloc(sizeof(uint32_t) * edge_list_size);
 
@@ -146,7 +157,7 @@ void initGraph(const string &filename, int &no_of_nodes, int &edge_list_size, ui
 
     // 读取边索引
     ifs.read(reinterpret_cast<char*>(edges), 
-            no_of_nodes * sizeof(uint32_t));
+        edge_list_size * sizeof(uint32_t));//这里的数量不能写错了
 
     // 验证读取完整性
     if (!ifs) {
@@ -162,7 +173,8 @@ void omp(int no_of_nodes, int edge_list_size, uint32_t *&offsets, uint32_t *&edg
 	//该函数功能:
 	//分配1个状态相关数组和1个存结果数组，并进行初始化
 	//判断节点未访问后调用bfs_queu进行具体节点开始打遍历
-	//时间+连通块个数输出
+	//时间输出
+    //内层销毁
 
 	//时间记录开始
     //包含环境参数设置，必要数组创建，主存到设备内存的拷贝、执行，拷贝回，数组销毁
@@ -176,7 +188,11 @@ void omp(int no_of_nodes, int edge_list_size, uint32_t *&offsets, uint32_t *&edg
 	// allocate mem for the result on host side
 	int *h_cost = (int*) malloc( sizeof(int)*no_of_nodes);//用于存储结果,这里相当于存储所在层次
 
+    // 设置OpenMP线程数
+    omp_set_num_threads(num_omp_threads);
+
 	//initialize the mem
+    #pragma omp parallel for
 	for(int i = 0; i < no_of_nodes; i++){
 		h_graph_mask[i] = false;
 		h_updating_graph_mask[i] = false;
@@ -184,21 +200,25 @@ void omp(int no_of_nodes, int edge_list_size, uint32_t *&offsets, uint32_t *&edg
 		h_cost[i]=-1;
 	}
     //初始化相关数组
-    memset(h_graph_mask, 0, no_of_nodes * sizeof(bool));
-    memset(h_updating_graph_mask, 0, no_of_nodes * sizeof(bool));
-    memset(h_graph_visited, 0, no_of_nodes * sizeof(bool));
-    memset(h_cost, -1, no_of_nodes * sizeof(int));
+    // memset(h_graph_mask, 0, no_of_nodes * sizeof(bool));
+    // memset(h_updating_graph_mask, 0, no_of_nodes * sizeof(bool));
+    // memset(h_graph_visited, 0, no_of_nodes * sizeof(bool));
+    // memset(h_cost, -1, no_of_nodes * sizeof(int));
 
 	//遍历所有节点，未访问就进入遍历
 	for(int i = 0; i < no_of_nodes; i++){
 		//未访问才进入遍历
 		if(!h_graph_visited[i]){
-            #if USE_OPTIMIZE
-            bfs_omp_optimized(no_of_nodes, i, offsets, edges,
-                h_graph_mask, h_updating_graph_mask,
-				h_graph_visited, h_cost, num_omp_threads);
-            #else
+            #if OPTIMIZE_LEVEL == 0
             bfs_omp(no_of_nodes, i, offsets, edges,
+                h_graph_mask, h_updating_graph_mask,
+				h_graph_visited, h_cost);
+            #elif OPTIMIZE_LEVEL == 1
+            bfs_omp_apart(no_of_nodes, i, offsets, edges,
+                h_graph_mask, h_updating_graph_mask,
+				h_graph_visited, h_cost);
+            #elif OPTIMIZE_LEVEL == 2
+            bfs_omp_optimized(no_of_nodes, i, offsets, edges,
                 h_graph_mask, h_updating_graph_mask,
 				h_graph_visited, h_cost, num_omp_threads);
             #endif 
@@ -218,110 +238,25 @@ void omp(int no_of_nodes, int edge_list_size, uint32_t *&offsets, uint32_t *&edg
     free(h_cost);
 }
 
-//优化版本optimized，通过​本地缓存+位操作优化 可以显著减少原子操作开销
-void bfs_omp_optimized( int no_of_nodes, int source,
-	uint32_t *&offsets, uint32_t *&edges, 
-    bool *&h_graph_mask, bool *&h_updating_graph_mask,
-	bool *&h_graph_visited, int *&h_cost, int num_omp_threads){
-	//函数功能
-	//设置源点相关状态
-	//使用队列遍历source开始的连通块
-
-    //h_graph_mask: 当前活跃节点层
-    //​h_updating_graph_mask: 下一层节点收集器
-    //每层处理完成后交换掩码数组指针（代码中通过数组值交换实现）
-
-	//set the source node as true in the mask
-    h_graph_mask[source] = true;
-	h_graph_visited[source]=true;
-	h_cost[source]=0;
-    // 设置OpenMP线程数
-    omp_set_num_threads(num_omp_threads);
-    bool has_active = true;
-
-    // 优化点1：用位掩码代替布尔数组（每个线程一个缓存）
-    constexpr int BIT_WIDTH = 64;//根据硬件参数调整，匹配CPU缓存行大小
-    const int num_words = (no_of_nodes + BIT_WIDTH - 1) / BIT_WIDTH;
-    std::vector<uint64_t> local_masks(num_omp_threads * num_words, 0);
-
-    // BFS层级迭代
-    while (has_active) {
-        has_active = false;
-        // 并行处理当前层节点
-        // 优化点2：本地缓存减少原子操作
-        #pragma omp parallel reduction(||:has_active)
-        {
-            int tid = omp_get_thread_num();
-            uint64_t* local_mask = &local_masks[tid * num_words];
-
-            #pragma omp for schedule(dynamic, 64)
-            for (int node = 0; node < no_of_nodes; ++node) {
-                if (h_graph_mask[node]) {
-                    const uint32_t start = offsets[node];
-                    const uint32_t end = offsets[node + 1];
-
-                    for (uint32_t i = start; i < end; ++i) {
-                        uint32_t neighbor = edges[i];
-                        if (!h_graph_visited[neighbor]) {
-                            // 本地位掩码操作（无锁）
-                            int word_idx = neighbor / BIT_WIDTH;
-                            int bit_idx = neighbor % BIT_WIDTH;
-                            local_mask[word_idx] |= (1ULL << bit_idx);
-
-                            // 更新cost（无竞争）
-                            h_cost[neighbor] = h_cost[node] + 1;
-                            has_active = true;
-                        }
-                    }
-                }
-            }
-
-            // 合并本地掩码到全局
-            #pragma omp barrier
-            #pragma omp for
-            for (int i = 0; i < num_words; ++i) {
-                for (int t = 0; t < num_omp_threads; ++t) {
-                    uint64_t val = local_masks[t * num_words + i];
-                    if (val) {
-                        #pragma omp atomic update
-                        h_updating_graph_mask[i] |= val;
-                    }
-                }
-            }
-        }
-
-        // 更新全局掩码
-        #pragma omp parallel for simd
-        for (int i = 0; i < no_of_nodes; ++i) {
-            int word_idx = i / BIT_WIDTH;
-            int bit_idx = i % BIT_WIDTH;
-            h_graph_mask[i] = (h_updating_graph_mask[word_idx] & (1ULL << bit_idx)) != 0;
-            h_graph_visited[i] |= h_graph_mask[i];
-            h_updating_graph_mask[word_idx] = 0;
-        }
-    }
-}
-
 //原始版本
 void bfs_omp( int no_of_nodes, int source,
 	uint32_t *&offsets, uint32_t *&edges, 
     bool *&h_graph_mask, bool *&h_updating_graph_mask,
-	bool *&h_graph_visited, int *&h_cost, int num_omp_threads){
+	bool *&h_graph_visited, int *&h_cost){
 	//函数功能
 	//设置源点相关状态
 	//使用队列遍历source开始的连通块
 
     //h_graph_mask: 当前活跃节点层
     //​h_updating_graph_mask: 下一层节点收集器
-    //每层处理完成后交换掩码数组指针（代码中通过数组值交换实现）
+    //每层处理完成后交换掩码数组指针（代码中通过数组值交换实现)
 
 	//set the source node as true in the mask
     h_graph_mask[source] = true;
 	h_graph_visited[source]=true;
 	h_cost[source]=0;
 
-    // 设置OpenMP线程数
-    omp_set_num_threads(num_omp_threads);
+    
     bool has_active = true;
 
     // BFS层级迭代
@@ -364,6 +299,121 @@ void bfs_omp( int no_of_nodes, int source,
     }
 }
 
+//优化版本1,当前层与下一次分开
+void bfs_omp_apart( int no_of_nodes, int source,
+	uint32_t *&offsets, uint32_t *&edges, 
+    bool *&h_graph_mask, bool *&h_updating_graph_mask,
+	bool *&h_graph_visited, int *&h_cost){
+	//函数功能
+	//设置源点相关状态
+	//使用队列遍历source开始的连通块
+
+    //h_graph_mask: 当前活跃节点层
+    //​h_updating_graph_mask: 下一层节点收集器
+    
+
+	//set the source node as true in the mask
+    h_graph_mask[source] = true;
+	h_graph_visited[source]=true;
+	h_cost[source]=0;
+
+    
+    bool has_active = true;
+
+    // BFS层级迭代
+    while (has_active) {
+        has_active = false;
+        // 并行处理当前层节点
+        #pragma omp parallel for
+        for (int node = 0; node < no_of_nodes; ++node) {
+            if (h_graph_mask[node]) {
+                h_graph_mask[node] = false;
+                // 遍历邻接表
+                const uint32_t start = offsets[node];
+                const uint32_t end = offsets[node + 1];
+                for (uint32_t i = start; i < end; ++i) {
+                    const uint32_t neighbor = edges[i];
+                    // 无竞争
+                    if (!h_graph_visited[neighbor]) {
+                        h_cost[neighbor] = h_cost[node] + 1;
+                        h_updating_graph_mask[neighbor] = true;
+                    }
+                }
+            }
+        }
+
+        // 交换掩码并重置下一层
+        #pragma omp parallel for reduction(||:has_active)
+        for (int i = 0; i < no_of_nodes; ++i) {
+            h_graph_mask[i] = h_updating_graph_mask[i];
+            h_updating_graph_mask[i] = false;
+            if(h_updating_graph_mask[i]){
+                h_graph_mask[i] = true;
+                h_graph_visited[i] = true;
+                h_updating_graph_mask[i] = true;
+                has_active = true;
+            }                
+        }
+    }
+}
+
+//优化版本optimized，使用swap交换h_graph_mask和​h_updating_graph_mask，并重置​h_updating_graph_mask
+void bfs_omp_optimized( int no_of_nodes, int source,
+	uint32_t *&offsets, uint32_t *&edges, 
+    bool *&h_graph_mask, bool *&h_updating_graph_mask,
+	bool *&h_graph_visited, int *&h_cost, int num_omp_threads){
+	//函数功能
+	//设置源点相关状态
+	//使用队列遍历source开始的连通块
+
+    //h_graph_mask: 当前活跃节点层
+    //​h_updating_graph_mask: 下一层节点收集器
+    //每层处理完成后交换掩码数组指针（代码中通过数组值交换实现)
+
+	//set the source node as true in the mask
+    h_graph_mask[source] = true;
+	h_graph_visited[source]=true;
+	h_cost[source]=0;
+
+    
+    bool has_active = true;
+
+    // BFS层级迭代
+    while (has_active) {
+        has_active = false;
+        // 并行处理当前层节点
+        #pragma omp parallel for schedule(dynamic, 64) reduction(||:has_active)
+        for (int node = 0; node < no_of_nodes; ++node) {
+            if (h_graph_mask[node]) {
+                // 遍历邻接表
+                const uint32_t start = offsets[node];
+                const uint32_t end = offsets[node + 1];
+
+                for (uint32_t i = start; i < end; ++i) {
+                    const uint32_t neighbor = edges[i];
+
+                    // 原子操作避免竞争
+                    if (!h_graph_visited[neighbor]) {
+                        #pragma omp atomic write
+                        h_cost[neighbor] = h_cost[node] + 1;
+
+                        #pragma omp atomic write
+                        h_graph_visited[neighbor] = true;
+
+                        #pragma omp atomic write
+                        h_updating_graph_mask[neighbor] = true;
+
+                        has_active = true;
+                    }
+                }
+            }
+        }
+
+        // 交换掩码缓冲区
+        std::swap(h_graph_mask, h_updating_graph_mask);
+        memset(h_updating_graph_mask, 0, no_of_nodes * sizeof(bool)); // 清空 next_mask
+    }
+}
 
 /*
 //再优化版本，复杂度增加了
