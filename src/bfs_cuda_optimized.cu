@@ -1,7 +1,5 @@
 /***
  * 函数功能：使用cuda并行的bfs对图进行遍历，不管图有没有连通
- * 将普通cuda版本和uvm，uvm-advise，uvm-prefetch，uvm-advise-prefetch集成到一起
- * 与具体硬件相关的参数的宏定义在include/cuda_device_attr.h内
  * 本程序使用Frontier-based，即数据驱动模式，动态维护一个“活跃节点队列”（Frontier），每个线程处理队列中的节点并生成下一层的队列
  * 特点：
  *  ​适合 GPU：通过原子操作或前缀和（Prefix Sum）高效管理队列，减少同步次数。
@@ -36,6 +34,7 @@ struct CSRHeader {
     uint32_t _padding=0;   // 填充字段
 };
 
+//纹理引用是全局静态的，只能放到main之外，不能在函数内定义
 texture<uint32_t> tex_offsets;
 texture<uint32_t> tex_edges;
 
@@ -87,8 +86,7 @@ float BFSGraphUnifiedMemory(OptionParser &op, cudaDeviceProp &deviceProp, int no
 //Frontier-base处理内核
 __global__ void ProcessFrontier(int* frontier_in, int frontier_size,
                                 int* frontier_out, int* frontier_out_size,
-                                int* d_cost, bool* d_visited,
-                                int no_of_nodes)
+                                int* d_cost, bool* d_visited)
 {
     extern __shared__ int s_buf[];
     
@@ -108,6 +106,7 @@ __global__ void ProcessFrontier(int* frontier_in, int frontier_size,
     for (int i = lane_id; i < num_neighbors; i += 32) {
         const uint32_t neighbor = tex1Dfetch(tex_edges, start + i);
         if (atomicCAS(&d_visited[neighbor], 0, 1) == 0) {
+            //atomicCAS ：Compare-And-Swap的原子操作
             d_cost[neighbor] = d_cost[node] + 1;
             valid_count = 1;
             break; // BFS只需记录是否被访问
@@ -148,11 +147,7 @@ void cuda_bfs_uvm(int no_of_nodes, int source, uint32_t *&graph_offsets, uint32_
         bool* &graph_mask, bool* &updating_graph_mask, bool* &graph_visited, int* &cost, bool *&over, 
         dim3 &grid, dim3 &block, double &kernel_time, int &k);
 
-//main内根据参数解析判断是否使用uvm相关，调用不同的BFSGraph,BFSGraphUnifiedMemory
-int main(int argc, char** argv){
-    //参数预设置
-    // Get args
-    OptionParser op;
+void Opinit(OptionParser &op){
     // Add shared options to the parser
     op.addOption("passes", OPT_INT, "10", "specify number of passes", 'n');
     op.addOption("verbose", OPT_BOOL, "0", "enable verbose output", 'v');
@@ -169,16 +164,21 @@ int main(int argc, char** argv){
     op.addOption("coop", OPT_BOOL, "0", "enable CUDA Cooperative Groups");
     op.addOption("dyn", OPT_BOOL, "0", "enable CUDA Dynamic Parallelism");
     op.addOption("graph", OPT_BOOL, "0", "enable CUDA Graphs");
+}
 
+//main内根据参数解析判断是否使用uvm相关，调用不同的BFSGraph,BFSGraphUnifiedMemory
+int main(int argc, char** argv){
+    //参数预设置
+    // Get args
+    OptionParser op;
+    Opinit(op);
     if (!op.parse(argc, argv))
     {
         op.usage();
         return (op.HelpRequested() ? 0 : 1);
     }
-
     // Check CUDA feature availability
     checkCudaFeatureAvailability(op);
-
     //设备设置
     int device;
     cudaGetDevice(&device);
@@ -201,6 +201,8 @@ int main(int argc, char** argv){
 
     //读文件获取信息
 	initGraph(filename, no_of_nodes, edge_list_size, offsets, edges);
+
+    //截至目前，读图，读参数完毕
 
     //执行passes次，根据参数判断使用啥程序，普通还是uvm相关
     printf("Running bfs_cuda\n");
@@ -312,7 +314,7 @@ void initGraph(const string &filename, int &no_of_nodes, int &edge_list_size, ui
 /// <returns>	Transfer time and kernel time. </returns>
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-float BFSGraph(cudaDeviceProp &deviceProp, int no_of_nodes, int edge_list_size, uint32_t *&offsets, uint32_t *&edges) 
+float BFSGraph(cudaDeviceProp &deviceProp, int no_of_nodes, int edge_list_size, uint32_t *&h_offsets, uint32_t *&h_edges) 
 {
     //该函数功能：
     //分配状态相关以及存结果内存并初始化
@@ -330,111 +332,58 @@ float BFSGraph(cudaDeviceProp &deviceProp, int no_of_nodes, int edge_list_size, 
     double kernel_time = 0;
     double transfer_time = 0;
     
-
-	// allocate host memory
-    bool *h_graph_mask = (bool*) malloc(sizeof(bool)*no_of_nodes);
-    assert(h_graph_mask);
-    bool *h_updating_graph_mask = (bool*) malloc(sizeof(bool)*no_of_nodes);
-    assert(h_updating_graph_mask);
-    bool *h_graph_visited = (bool*) malloc(sizeof(bool)*no_of_nodes);
-    assert(h_graph_visited);
-    // allocate mem for the result on host side
+	//主机端内存分配
+    //状态及存结果的数组，主机端都不需要初始化，直接在设备内存初始化即可，后面还要拷贝回来
     int *h_cost = (int*) malloc( sizeof(int)*no_of_nodes);
-    assert(h_cost);
+    bool *h_graph_visited = (bool*) malloc(sizeof(bool)*no_of_nodes);
+    
 
-	// // initalize the memory
-    // for (int i = 0; i < no_of_nodes; i++) 
-    // {
-    //     h_graph_mask[i]=false;
-    //     h_updating_graph_mask[i]=false;
-    //     h_graph_visited[i]=false;
-    //     h_cost[i]=-1;
-    // }
-    //初始化相关数组
-    memset(h_graph_mask, 0, no_of_nodes * sizeof(bool));
-    memset(h_updating_graph_mask, 0, no_of_nodes * sizeof(bool));
-    memset(h_graph_visited, 0, no_of_nodes * sizeof(bool));
-    memset(h_cost, -1, no_of_nodes * sizeof(int));
-
-    //设备内存创建一次，拷贝多次
-    //外层循环只是每次控制以不同节点进入遍历而已，拷贝出来与拷贝进去，除了第一次执行要拷贝进去和最后一次执行完需要拷贝出来，其余时间每变化过
-    //只有一个visited数组需要再外层循环每次执行前判断，这个是需要反复拷贝的
-    //内存循环关于source节点初值每次都需要设置，这个也得拷贝
-
+    //设备端内层分配
     uint32_t *d_offsets = nullptr;
     uint32_t *d_edges = nullptr;
-	// mask
-	bool* d_graph_mask;
-	bool* d_updating_graph_mask;
-	// visited nodes
-	bool* d_graph_visited;
-    // result
-	int* d_cost;
-	// bool if execution is over
-	bool *d_over;
+    int *d_cost = nullptr;
+    int *frontier[2] = {nullptr};//对应原来mask和updating
+    bool *d_visited = nullptr;//对应visited
+    int *d_frontier_size = nullptr;//新增存大小
 
-    //统一分配
-    //CUDA_SAFE_CALL_NOEXIT宏定义于cudacommon
-	CUDA_SAFE_CALL_NOEXIT(cudaMalloc( (void**) &d_offsets, sizeof(uint32_t) * (no_of_nodes+1)));//注意offset要多分配一个
-	CUDA_SAFE_CALL_NOEXIT(cudaMalloc( (void**) &d_edges, sizeof(uint32_t) * edge_list_size));
-	CUDA_SAFE_CALL_NOEXIT(cudaMalloc( (void**) &d_graph_mask, sizeof(bool)*no_of_nodes));
-	CUDA_SAFE_CALL_NOEXIT(cudaMalloc( (void**) &d_updating_graph_mask, sizeof(bool)*no_of_nodes));
-	CUDA_SAFE_CALL_NOEXIT(cudaMalloc( (void**) &d_graph_visited, sizeof(bool)*no_of_nodes));
-	CUDA_SAFE_CALL_NOEXIT(cudaMalloc( (void**) &d_cost, sizeof(int)*no_of_nodes));
-	CUDA_SAFE_CALL_NOEXIT(cudaMalloc( (void**) &d_over, sizeof(bool)));
-    cudaError_t err = cudaGetLastError();
+    //先计算大小，防止后面重复计算，且不易错
+    const size_t offsets_size = sizeof(uint32_t) * (no_of_nodes + 1);
+    //const size_t edges_size = sizeof(uint32_t) * h_offsets[no_of_nodes];
+    const size_t edges_size = sizeof(uint32_t) * edge_list_size;
 
-    if(err != cudaSuccess) {
-        free( h_graph_mask);
-        free( h_updating_graph_mask);
-        free( h_graph_visited);
-        free( h_cost);
-        cudaFree(d_offsets);
-        cudaFree(d_edges);
-        cudaFree(d_graph_mask);
-        cudaFree(d_updating_graph_mask);
-        cudaFree(d_graph_visited);
-        cudaFree(d_cost);  
-        cudaFree(d_over);
-        return FLT_MAX;
-    }
-
-
-    
+    CUDA_SAFE_CALL(cudaMalloc(&d_offsets, offsets_size));
+    CUDA_SAFE_CALL(cudaMalloc(&d_edges, edges_size));
+    CUDA_SAFE_CALL(cudaMalloc(&d_cost, sizeof(int) * no_of_nodes));
+    CUDA_SAFE_CALL(cudaMalloc(&d_visited, sizeof(bool) * no_of_nodes));
+    CUDA_SAFE_CALL(cudaMalloc(&frontier[0], sizeof(int) * no_of_nodes));
+    CUDA_SAFE_CALL(cudaMalloc(&frontier[1], sizeof(int) * no_of_nodes));
+    CUDA_SAFE_CALL(cudaMalloc(&d_frontier_size, sizeof(int)));
+	
     cudaEvent_t tstart, tstop;
     cudaEventCreate(&tstart);
     cudaEventCreate(&tstop);
-    float elapsedTime = 0;
     cudaEventRecord(tstart, 0);
-    //nodes和edges拷贝一次就行，这个不会变的，因此放外层函数拷贝
-    cudaMemcpy( d_offsets, offsets, sizeof(uint32_t)*(no_of_nodes+1), cudaMemcpyHostToDevice);
-    cudaMemcpy( d_edges, edges, sizeof(uint32_t)*edge_list_size, cudaMemcpyHostToDevice);
-    //这个也是一样，就kernel执行时会更改，除此以外无其他地方变更，因此全局拷贝一次，之后就在设备上供次执行的kernel共享
-    cudaMemcpy( d_updating_graph_mask, h_updating_graph_mask, sizeof(bool)*no_of_nodes, cudaMemcpyHostToDevice);
-    //以下三种数组，内层每次需要设置source相关状态，因此使用时每次只拷贝一个值就行，但要统一在第一次执行时全部拷贝一次
-    cudaMemcpy( d_graph_mask, h_graph_mask, sizeof(bool)*no_of_nodes, cudaMemcpyHostToDevice);
-    cudaMemcpy( d_graph_visited, h_graph_visited, sizeof(bool)*no_of_nodes, cudaMemcpyHostToDevice);
-    cudaMemcpy( d_cost, h_cost, sizeof(int)*no_of_nodes, cudaMemcpyHostToDevice);
+    // 拷贝图数据，offsets和edges
+    CUDA_SAFE_CALL(cudaMemcpy(d_offsets, h_offsets, offsets_size, 
+        cudaMemcpyHostToDevice));
+    CUDA_SAFE_CALL(cudaMemcpy(d_edges, h_edges, edges_size, 
+        cudaMemcpyHostToDevice));
     cudaEventRecord(tstop, 0);
     cudaEventSynchronize(tstop);
     cudaEventElapsedTime(&elapsedTime, tstart, tstop);
-    transfer_time += elapsedTime * 1.e-3; // convert to seconds
+    transfer_time += elapsedTime * 1.e-3;
 
+    // 初始化设备数据，确实没必要设置了主机再拷贝，直接在设备上初始化
+    CUDA_SAFE_CALL(cudaMemset(d_cost, 0xFF, sizeof(int) * no_of_nodes));
+    CUDA_SAFE_CALL(cudaMemset(d_visited, 0, sizeof(bool) * no_of_nodes));
+    
 
-    //内层循环执行参数设置
-    int num_of_blocks = 1;
-    int num_of_threads_per_block = no_of_nodes;//正常限制为1024，这里先设置为节点数，然后再计算
-    int max_threads_per_block = deviceProp.maxThreadsPerBlock;//硬件限制的
-    //Make execution Parameters according to the number of nodes
-    //Distribute threads across multiple Blocks if necessary
-    if (no_of_nodes > max_threads_per_block)
-    {
-        num_of_blocks = (int)ceil(no_of_nodes/(double)max_threads_per_block);
-        num_of_threads_per_block = max_threads_per_block; 
-    }
-    //setup execution parameters
-    dim3  grid( num_of_blocks, 1, 1);//1维grid，有num_of_blocks个block
-    dim3  block( num_of_threads_per_block, 1, 1);//1维threads
+    //绑定纹理内存
+    //CUDA 的纹理内存（Texture Memory）​本质是全局内存的缓存视图，
+    //数据仍然存储在全局内存中，
+    //但通过纹理缓存（Texture Cache）的硬件机制进行访问。
+    CUDA_SAFE_CALL(cudaBindTexture(0, tex_offsets, d_offsets, offsets_size));
+    CUDA_SAFE_CALL(cudaBindTexture(0, tex_edges, d_edges, edges_size));
 
 	//遍历所有节点，未访问就进入遍历
     int cnt = 0;//用于记录连通块数量
@@ -444,10 +393,11 @@ float BFSGraph(cudaDeviceProp &deviceProp, int no_of_nodes, int edge_list_size, 
         //在这里从设备拷贝visited不现实，反向思考，内层循环每次执行完都拷贝一次visited，只需拷贝i之后的即可，前面无需
 		if(!h_graph_visited[i]){
             ++cnt;
-			cuda_bfs(no_of_nodes, i,
-				 h_graph_mask, h_graph_visited, h_cost,
-                 d_offsets, d_edges, d_graph_mask, d_updating_graph_mask, 
-                 d_graph_visited, d_cost, d_over, grid, block, kernel_time, transfer_time, k);
+            cuda_bfs_frontier();
+			// cuda_bfs(no_of_nodes, i,
+			// 	 h_graph_mask, h_graph_visited, h_cost,
+            //      d_offsets, d_edges, d_graph_mask, d_updating_graph_mask, 
+            //      d_graph_visited, d_cost, d_over, grid, block, kernel_time, transfer_time, k);
 		}
 	}
 	
@@ -465,19 +415,18 @@ float BFSGraph(cudaDeviceProp &deviceProp, int no_of_nodes, int edge_list_size, 
     double duration_t = double(duration.count()) * microseconds::period::num / microseconds::period::den;
     total_time += duration_t;
 
-
-    //clean device mem
+    // 清理资源
+    CUDA_SAFE_CALL(cudaUnbindTexture(tex_offsets));
+    CUDA_SAFE_CALL(cudaUnbindTexture(tex_edges));
     cudaFree(d_offsets);
-	cudaFree(d_edges);
-	cudaFree(d_graph_mask);
-	cudaFree(d_updating_graph_mask);
-	cudaFree(d_graph_visited);
-	cudaFree(d_cost);  
-    cudaFree(d_over);
+    cudaFree(d_edges);
+    cudaFree(d_cost);
+    cudaFree(d_visited);
+    cudaFree(frontier[0]);
+    cudaFree(frontier[1]);
+    cudaFree(d_frontier_size);
 
-	//cleanup memory
-	free( h_graph_mask);
-	free( h_updating_graph_mask);
+	//cleanup memory host
 	free( h_graph_visited);
 	free( h_cost);
 	
@@ -825,86 +774,91 @@ void cuda_bfs_uvm(int no_of_nodes, int source, uint32_t *&graph_offsets, uint32_
     }
 
 
-//该函数实现了从source节点开始的遍历
+//该函数实现了从source节点开始的遍历，使用Frontier-based方法
 void cuda_bfs_frontier(int no_of_nodes, int source, 
-                      const uint32_t* h_offsets, const uint32_t* h_edges) {
-    // 设备内存指针
-    uint32_t *d_offsets = nullptr;
-    uint32_t *d_edges = nullptr;
-    int *d_cost = nullptr;
-    int *frontier[2] = {nullptr};
-    bool *d_visited = nullptr;
-    int *d_frontier_size = nullptr;
-
-    // 分配设备内存
-    const size_t offsets_size = sizeof(uint32_t) * (no_of_nodes + 1);
-    const size_t edges_size = sizeof(uint32_t) * h_offsets[no_of_nodes];
-
-    CUDA_SAFE_CALL(cudaMalloc(&d_offsets, offsets_size));
-    CUDA_SAFE_CALL(cudaMalloc(&d_edges, edges_size));
-    CUDA_SAFE_CALL(cudaMalloc(&d_cost, sizeof(int) * no_of_nodes));
-    CUDA_SAFE_CALL(cudaMalloc(&d_visited, sizeof(bool) * no_of_nodes));
-    CUDA_SAFE_CALL(cudaMalloc(&frontier[0], sizeof(int) * no_of_nodes));
-    CUDA_SAFE_CALL(cudaMalloc(&frontier[1], sizeof(int) * no_of_nodes));
-    CUDA_SAFE_CALL(cudaMalloc(&d_frontier_size, sizeof(int)));
-
-    // 拷贝图数据
-    CUDA_SAFE_CALL(cudaMemcpy(d_offsets, h_offsets, offsets_size, 
-                             cudaMemcpyHostToDevice));
-    CUDA_SAFE_CALL(cudaMemcpy(d_edges, h_edges, edges_size, 
-                             cudaMemcpyHostToDevice));
-
-    // 初始化设备数据
-    CUDA_SAFE_CALL(cudaMemset(d_cost, 0xFF, sizeof(int) * no_of_nodes));
-    CUDA_SAFE_CALL(cudaMemset(d_visited, 0, sizeof(bool) * no_of_nodes));
+    bool *&h_graph_visited,int *&d_cost, bool *&d_visited,
+    int *frontier[2], int *&d_frontier_size, 
+    double &kernel_time, double &transfer_time, int &k)
+    {
+    //直接初始化source设备相关内存，相当于设置mask，visited和cost,顺带初始化设备端值
     int init_cost = 0;
-    CUDA_SAFE_CALL(cudaMemcpy(&d_cost[source], &init_cost, sizeof(int),
-                             cudaMemcpyHostToDevice));
-
-    // 绑定纹理内存
-    CUDA_SAFE_CALL(cudaBindTexture(0, tex_offsets, d_offsets, offsets_size));
-    CUDA_SAFE_CALL(cudaBindTexture(0, tex_edges, d_edges, edges_size));
-
+    cudaEvent_t tstart, tstop;
+    cudaEventCreate(&tstart);
+    cudaEventCreate(&tstop);
+    cudaEventRecord(tstart, 0);
+    CUDA_SAFE_CALL(cudaMemcpy(&d_cost[source], &init_cost, sizeof(int), cudaMemcpyHostToDevice));
+    cudaEventRecord(tstop, 0);
+    cudaEventSynchronize(tstop);
+    cudaEventElapsedTime(&elapsedTime, tstart, tstop);
+    transfer_time += elapsedTime * 1.e-3;
     // 初始化队列
     int current = 0;//初始当前层编号为0
-    int frontier_size[2] = {1, 0};//最开始当前层只有source
-    CUDA_SAFE_CALL(cudaMemcpy(frontier[0], &source, sizeof(int), 
-                             cudaMemcpyHostToDevice));
-    
+    int frontier_size[2] = {1, 0};//最开始当前层只有source，下一层没有节点
+    cudaEventRecord(tstart, 0);
+    CUDA_SAFE_CALL(cudaMemcpy(&frontier[0], &source, sizeof(int), cudaMemcpyHostToDevice));
+    cudaEventRecord(tstop, 0);
+    cudaEventSynchronize(tstop);
+    cudaEventElapsedTime(&elapsedTime, tstart, tstop);
+    transfer_time += elapsedTime * 1.e-3;
+    //设置d_visited
+    int init_visited = 1;
+    cudaEventRecord(tstart, 0);
+    CUDA_SAFE_CALL(cudaMemcpy(&d_visited[source], &init_visited, sizeof(bool), cudaMemcpyHostToDevice));
+    cudaEventRecord(tstop, 0);
+    cudaEventSynchronize(tstop);
+    cudaEventElapsedTime(&elapsedTime, tstart, tstop);
+    transfer_time += elapsedTime * 1.e-3;
+    // // 绑定纹理内存
+    // CUDA_SAFE_CALL(cudaBindTexture(0, tex_offsets, d_offsets, offsets_size));
+    // CUDA_SAFE_CALL(cudaBindTexture(0, tex_edges, d_edges, edges_size));
+
     // 执行参数配置
     const int block_size = 256;
     dim3 grid(256), threads(block_size);
-
     // BFS主循环
     do {
         // 重置下一层队列大小
         frontier_size[1 - current] = 0;
+        cudaEventRecord(tstart, 0);
         CUDA_SAFE_CALL(cudaMemcpy(d_frontier_size, &frontier_size[1 - current],
                                  sizeof(int), cudaMemcpyHostToDevice));
-
+        cudaEventRecord(tstop, 0);
+        cudaEventSynchronize(tstop);
+        cudaEventElapsedTime(&elapsedTime, tstart, tstop);
+        transfer_time += elapsedTime * 1.e-3;
         // 启动处理内核
+        cudaEventRecord(tstart, 0);
         ProcessFrontier<<<grid, threads, block_size*sizeof(int)>>>(
             frontier[current], frontier_size[current],
             frontier[1 - current], d_frontier_size,
-            d_cost, d_visited, no_of_nodes
-        );
-
+            d_cost, d_visited);
+        cudaEventRecord(tstop, 0);
+        cudaEventSynchronize(tstop);
+        cudaEventElapsedTime(&elapsedTime, tstart, tstop);
+        kernel_time += elapsedTime * 1.e-3;
+        
         // 更新队列状态
+        cudaEventRecord(tstart, 0);
         CUDA_SAFE_CALL(cudaMemcpy(&frontier_size[1 - current], d_frontier_size,
                                  sizeof(int), cudaMemcpyDeviceToHost));
+        cudaEventRecord(tstop, 0);
+        cudaEventSynchronize(tstop);
+        cudaEventElapsedTime(&elapsedTime, tstart, tstop);
+        transfer_time += elapsedTime * 1.e-3;
         current = 1 - current;
+        k++;
     } while (frontier_size[current] > 0);
-
-    // 清理资源
-    CUDA_SAFE_CALL(cudaUnbindTexture(tex_offsets));
-    CUDA_SAFE_CALL(cudaUnbindTexture(tex_edges));
-    cudaFree(d_offsets);
-    cudaFree(d_edges);
-    cudaFree(d_cost);
-    cudaFree(d_visited);
-    cudaFree(frontier[0]);
-    cudaFree(frontier[1]);
-    cudaFree(d_frontier_size);
+    //每次执行完需要将visited状态信息拷贝到主机侧，便于判断进入下一次遍历
+    //先计算拷贝的节点数量
+    //这里和原版不同，这里需要从source开始拷贝，外层循环初始化时是直接在设备上初始化的
+    //拷贝[source, no_of_nodes)
+    int count = no_of_nodes - source;//左闭右开区间
+    cudaEventRecord(tstart, 0);
+    cudaMemcpy(h_graph_visited + source, d_visited + source, sizeof(bool)*count, cudaMemcpyDeviceToHost);
+    cudaEventRecord(tstop, 0);
+    cudaEventSynchronize(tstop);
+    cudaEventElapsedTime(&elapsedTime, tstart, tstop);
+    transfer_time += elapsedTime * 1.e-3; 
 }
 
 void checkCudaFeatureAvailability(OptionParser &op) {

@@ -152,12 +152,7 @@ void cuda_bfs(int no_of_nodes, int source,
 void cuda_bfs_uvm(int no_of_nodes, int source, uint32_t *&graph_offsets, uint32_t *&graph_edges,
         bool* &graph_mask, bool* &updating_graph_mask, bool* &graph_visited, int* &cost, bool *&over, 
         dim3 &grid, dim3 &block, double &kernel_time, int &k);
-
-//main内根据参数解析判断是否使用uvm相关，调用不同的BFSGraph,BFSGraphUnifiedMemory
-int main(int argc, char** argv){
-    //参数预设置
-    // Get args
-    OptionParser op;
+void Opinit(OptionParser &op){
     // Add shared options to the parser
     op.addOption("passes", OPT_INT, "10", "specify number of passes", 'n');
     op.addOption("verbose", OPT_BOOL, "0", "enable verbose output", 'v');
@@ -174,7 +169,15 @@ int main(int argc, char** argv){
     op.addOption("coop", OPT_BOOL, "0", "enable CUDA Cooperative Groups");
     op.addOption("dyn", OPT_BOOL, "0", "enable CUDA Dynamic Parallelism");
     op.addOption("graph", OPT_BOOL, "0", "enable CUDA Graphs");
+}
 
+//main内根据参数解析判断是否使用uvm相关，调用不同的BFSGraph,BFSGraphUnifiedMemory
+int main(int argc, char** argv){
+    //参数预设置
+    // Get args
+    OptionParser op;
+    Opinit(op);
+    
     if (!op.parse(argc, argv))
     {
         op.usage();
@@ -860,19 +863,7 @@ void cuda_bfs(int no_of_nodes, int source,
         cudaEventSynchronize(tstop);
         cudaEventElapsedTime(&elapsedTime, tstart, tstop);
         transfer_time += elapsedTime * 1.e-3; // convert to seconds
-    
-        /*
-        //为了统一时间记录规则，这部分不需要了
-        string outfile = op.getOptionString("outputFile");
-        if(outfile != "") {
-            FILE *fpo = fopen(outfile.c_str(),"w");
-            for(int i=0;i<no_of_nodes;i++) {
-                fprintf(fpo,"%d) cost:%d\n",i,h_cost[i]);
-            }
-            fclose(fpo);
-        }
-        */
-        //Store the result into a file
+
     }
 
 //BFSGraphUVM内再封装一层，进行从source出发具体的遍历
