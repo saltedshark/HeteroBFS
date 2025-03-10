@@ -166,9 +166,11 @@ void seq(int no_of_nodes, int edge_list_size, uint32_t *&offsets, uint32_t *&edg
     memset(h_cost, -1, no_of_nodes * sizeof(int));
 
 	//遍历所有节点，未访问就进入遍历
+    int cnt = 0;//统计连通块
 	for(int i = 0; i < no_of_nodes; i++){
 		//未访问才进入遍历
 		if(!h_graph_visited[i]){
+            cnt++;
 			bfs_queue(no_of_nodes, i, offsets, edges,
 				h_graph_visited, h_cost);
 		}
@@ -179,6 +181,7 @@ void seq(int no_of_nodes, int edge_list_size, uint32_t *&offsets, uint32_t *&edg
     auto duration = duration_cast<microseconds>(end_t - start_t);
     double total_time = double(duration.count()) * microseconds::period::num / microseconds::period::den;
     printf("total_time is %f seconds\n", total_time);
+    printf("graph_block is %d\n", cnt);
     //清理内存
     free(h_graph_visited);
     free(h_cost);
