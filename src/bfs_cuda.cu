@@ -453,7 +453,7 @@ float BFSGraph(cudaDeviceProp &deviceProp, int no_of_nodes, int edge_list_size, 
         //在这里从设备拷贝visited不现实，反向思考，内层循环每次执行完都拷贝一次visited，只需拷贝i之后的即可，前面无需
 		if(!h_graph_visited[i]){
             ++cnt;
-            printf("visite node : %d\n", i);
+            // printf("visite node : %d\n", i);
 			cuda_bfs(no_of_nodes, i,
 				 h_graph_mask, h_graph_visited, h_cost,
                  d_offsets, d_edges, d_graph_mask, d_updating_graph_mask, 
