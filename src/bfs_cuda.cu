@@ -15,7 +15,6 @@ using std::string;
 using namespace std::chrono;
 #include <iostream>
 #include <queue>
-#include <iostream>
 #include <fstream>
 #include <cstdint>
 #include <iomanip>// 用于十六进制输出
@@ -127,7 +126,8 @@ __global__ void Kernel( uint32_t *g_offsets, uint32_t *g_edges, bool* g_graph_ma
 /// <param name="no_of_nodes">				The no of nodes. </param>
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__global__ void Kernel2( bool* g_graph_mask, bool *g_updating_graph_mask, bool* g_graph_visited, bool *g_over, int no_of_nodes)
+__global__ void Kernel2( bool* g_graph_mask, bool *g_updating_graph_mask,
+     bool* g_graph_visited, bool *g_over, int no_of_nodes)
 {
     //int tid = (blockIdx.y * gridDim.x + blockIdx.x) * (blockDim.x * blockDim.y) + threadIdx.y * blockDim.y + threadIdx.x;
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
@@ -351,14 +351,6 @@ float BFSGraph(cudaDeviceProp &deviceProp, int no_of_nodes, int edge_list_size, 
     int *h_cost = (int*) malloc( sizeof(int)*no_of_nodes);
     assert(h_cost);
 
-	// // initalize the memory
-    // for (int i = 0; i < no_of_nodes; i++) 
-    // {
-    //     h_graph_mask[i]=false;
-    //     h_updating_graph_mask[i]=false;
-    //     h_graph_visited[i]=false;
-    //     h_cost[i]=-1;
-    // }
     //初始化相关数组
     memset(h_graph_mask, 0, no_of_nodes * sizeof(bool));
     memset(h_updating_graph_mask, 0, no_of_nodes * sizeof(bool));
@@ -373,14 +365,14 @@ float BFSGraph(cudaDeviceProp &deviceProp, int no_of_nodes, int edge_list_size, 
     uint32_t *d_offsets = nullptr;
     uint32_t *d_edges = nullptr;
 	// mask
-	bool* d_graph_mask;
-	bool* d_updating_graph_mask;
+	bool* d_graph_mask = nullptr;
+	bool* d_updating_graph_mask = nullptr;
 	// visited nodes
-	bool* d_graph_visited;
+	bool* d_graph_visited = nullptr;
     // result
-	int* d_cost;
+	int* d_cost = nullptr;
 	// bool if execution is over
-	bool *d_over;
+	bool *d_over = nullptr;
 
     //统一分配
     //CUDA_SAFE_CALL_NOEXIT宏定义于cudacommon
