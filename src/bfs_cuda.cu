@@ -1,7 +1,6 @@
 /***
  * 函数功能：使用cuda并行的bfs对图进行遍历，不管图有没有连通
  * 将普通cuda版本和uvm，uvm-advise，uvm-prefetch，uvm-advise-prefetch集成到一起
- * 与具体硬件相关的参数的宏定义在include/cuda_device_attr.h内
  * 本程序使用传统的层级同步方法，逐层遍历图，每一层处理完后同步所有线程，再进入下一层。
  * 特点：
  *  适合 CPU：层间同步容易实现（如 OpenMP barrier）
@@ -152,31 +151,14 @@ void cuda_bfs(int no_of_nodes, int source,
 void cuda_bfs_uvm(int no_of_nodes, int source, uint32_t *&graph_offsets, uint32_t *&graph_edges,
         bool* &graph_mask, bool* &updating_graph_mask, bool* &graph_visited, int* &cost, bool *&over, 
         dim3 &grid, dim3 &block, double &kernel_time, int &k);
-void Opinit(OptionParser &op){
-    // Add shared options to the parser
-    op.addOption("passes", OPT_INT, "10", "specify number of passes", 'n');
-    op.addOption("verbose", OPT_BOOL, "0", "enable verbose output", 'v');
-    op.addOption("quiet", OPT_BOOL, "0", "enable concise output", 'q');
-    op.addOption("inputFile", OPT_STRING, "", "path of input file", 'i');
-    // op.addOption("outputFile", OPT_STRING, "", "path of output file", 'o');
-    op.addOption("device", OPT_VECINT, "0", "specify device(s) to run on", 'd');
-
-    // Add options for turn on/off CUDA features
-    op.addOption("uvm", OPT_BOOL, "0", "enable CUDA Unified Virtual Memory, only demand paging");
-    op.addOption("uvm-advise", OPT_BOOL, "0", "guide the driver about memory usage patterns");
-    op.addOption("uvm-prefetch", OPT_BOOL, "0", "prefetch memory the specified destination device");
-    op.addOption("uvm-prefetch-advise", OPT_BOOL, "0", "prefetch memory the specified destination device with memory guidance on");
-    op.addOption("coop", OPT_BOOL, "0", "enable CUDA Cooperative Groups");
-    op.addOption("dyn", OPT_BOOL, "0", "enable CUDA Dynamic Parallelism");
-    op.addOption("graph", OPT_BOOL, "0", "enable CUDA Graphs");
-}
+void opinit(OptionParser &op);
 
 //main内根据参数解析判断是否使用uvm相关，调用不同的BFSGraph,BFSGraphUnifiedMemory
 int main(int argc, char** argv){
     //参数预设置
     // Get args
     OptionParser op;
-    Opinit(op);
+    opinit(op);
     
     if (!op.parse(argc, argv))
     {
@@ -245,6 +227,24 @@ int main(int argc, char** argv){
 	return 0;
 }
 
+void opinit(OptionParser &op){
+    // Add shared options to the parser
+    op.addOption("passes", OPT_INT, "10", "specify number of passes", 'n');
+    op.addOption("verbose", OPT_BOOL, "0", "enable verbose output", 'v');
+    op.addOption("quiet", OPT_BOOL, "0", "enable concise output", 'q');
+    op.addOption("inputFile", OPT_STRING, "", "path of input file", 'i');
+    // op.addOption("outputFile", OPT_STRING, "", "path of output file", 'o');
+    op.addOption("device", OPT_VECINT, "0", "specify device(s) to run on", 'd');
+
+    // Add options for turn on/off CUDA features
+    op.addOption("uvm", OPT_BOOL, "0", "enable CUDA Unified Virtual Memory, only demand paging");
+    op.addOption("uvm-advise", OPT_BOOL, "0", "guide the driver about memory usage patterns");
+    op.addOption("uvm-prefetch", OPT_BOOL, "0", "prefetch memory the specified destination device");
+    op.addOption("uvm-prefetch-advise", OPT_BOOL, "0", "prefetch memory the specified destination device with memory guidance on");
+    op.addOption("coop", OPT_BOOL, "0", "enable CUDA Cooperative Groups");
+    op.addOption("dyn", OPT_BOOL, "0", "enable CUDA Dynamic Parallelism");
+    op.addOption("graph", OPT_BOOL, "0", "enable CUDA Graphs");
+}
 
 void initGraph(const string &filename, int &no_of_nodes, int &edge_list_size, uint32_t *&offsets, uint32_t *&edges){
 	
@@ -767,7 +767,7 @@ void cuda_bfs(int no_of_nodes, int source,
         //执行do-while执行两个kernel
         //执行完将外层循环需要用到的数组拷贝回主机端，如d_graph_visited只需要拷贝source之后打数组，其余数组就保留在设备端共享即可
 
-        //set the source node as true in the mask
+        //set the source node
         h_graph_mask[source]=true;
         h_graph_visited[source]=true;
         h_cost[source]=0;

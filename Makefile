@@ -13,6 +13,10 @@ NVCC := nvcc
 NVCCFLAGS := -arch=sm_86 -O3 -Isrc/include
 NVCC_LDFLAGS := -lcudart
 
+# OpenCL配置
+OPENCL_CXXFLAGS := -I/usr/include/CL       # 根据实际头文件路径调整
+OPENCL_LDFLAGS := -lOpenCL                 # 链接 OpenCL 库
+
 # SNAP库路径
 SNAP_CORE := extern/snap/snap-core
 SNAP_LIB := $(SNAP_CORE)/libsnap.a
@@ -35,13 +39,22 @@ CUDA_EXECUTABLES := $(patsubst $(SRC_DIR)/%.cu, $(BIN_DIR)/%, $(CUDA_SOURCES))
 
 
 # 程序分类
+# OpenCL程序列表
+OPENCL_PROGRAMS := bfs_ocl  # 例如您的程序名为 bfs_opencl.cpp
 # OpenMP程序列表，需要使用openmp但不使用snap库
 OPENMP_PROGRAMS := bfs_omp   # 需要OpenMP但不依赖SNAP的程序
-# 使用SNAP的程序列表（匹配目标名，如bin/testsnap对应testsnap）
+# 使用SNAP的程序列表（匹配目标名，如bin/testsnap对应testsnap），空格分开
 SNAP_PROGRAMS := testsnap graph_gen
+
+
 
 # 主目标：编译所有程序（包含CUDA）
 all: $(EXECUTABLES) $(CUDA_EXECUTABLES)
+
+# OpenCL程序规则，包含include内头文件
+$(foreach prog,$(OPENCL_PROGRAMS),$(BIN_DIR)/$(prog)): $(BIN_DIR)/%: $(SRC_DIR)/%.cpp $(CPP_OBJS) | $(BIN_DIR)
+	@echo "=== 编译OpenCL程序：$@ ==="
+	$(CXX) $(CXXFLAGS) $(OPENCL_CXXFLAGS) -I$(INCLUDE_DIR) $< $(CPP_OBJS) -o $@ $(OPENCL_LDFLAGS) $(LDFLAGS)
 
 # CUDA程序编译规则，先编译对应cpp文件、cu文件，然后最后再一起链接
 # 需要编译的C++源文件（自动扫描include目录下所有.cpp），纯头文件（如 cudacommon.h）无需特殊处理，代码包含就直接使用了
@@ -56,8 +69,6 @@ $(CUDA_EXECUTABLES): $(BIN_DIR)/%: $(SRC_DIR)/%.cu $(CPP_OBJS) | $(BIN_DIR)
 	@echo "=== 编译CUDA程序：$@ ==="
 	$(NVCC) $(NVCCFLAGS) $< $(CPP_OBJS) -o $@ $(NVCC_LDFLAGS) -lstdc++
 
-
-
 # OpenMP程序规则
 $(foreach prog,$(OPENMP_PROGRAMS),$(BIN_DIR)/$(prog)): $(BIN_DIR)/%: $(SRC_DIR)/%.cpp | $(BIN_DIR)
 	@echo "=== 编译OpenMP程序：$@ ==="
@@ -68,11 +79,10 @@ $(foreach prog,$(SNAP_PROGRAMS),$(BIN_DIR)/$(prog)): $(BIN_DIR)/%: $(SRC_DIR)/%.
 	@echo "=== 编译SNAP程序：$@ ==="
 	$(CXX) $(CXXFLAGS) $(OMP_CXXFLAGS) $(SNAP_INCLUDES) $< -o $@ $(SNAP_LDFLAGS) $(LDFLAGS)
 
-# 普通程序规则（排除前两类）
-$(filter-out $(foreach p,$(SNAP_PROGRAMS) $(OPENMP_PROGRAMS),$(BIN_DIR)/$(p)),$(EXECUTABLES)): $(BIN_DIR)/%: $(SRC_DIR)/%.cpp | $(BIN_DIR)
+# 普通程序规则（排除其他类别）
+$(filter-out $(foreach p,$(SNAP_PROGRAMS) $(OPENMP_PROGRAMS) $(OPENCL_PROGRAMS),$(BIN_DIR)/$(p)),$(EXECUTABLES)): $(BIN_DIR)/%: $(SRC_DIR)/%.cpp | $(BIN_DIR)
 	@echo "=== 编译普通程序：$@ ==="
 	$(CXX) $(CXXFLAGS) $< -o $@ $(LDFLAGS)
-
 
 # 创建输出目录
 $(BIN_DIR):

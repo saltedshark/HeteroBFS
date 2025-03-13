@@ -1,6 +1,6 @@
 /***
  * 仿照Altis中的模块化bfs代码，修改本处的bfs代码；
- * 用法：./program -n 1 -i inputfile -k kernelfile -p platform -d device -l localworksize
+ * 用法：./program -p platform -d device -n 1 -i inputfile -k kernelfile -l localworksize -k kernelfile
  */
 
 
@@ -67,19 +67,21 @@ void initGraph(const std::string &filename, int &no_of_nodes, int &edge_list_siz
 void opinit(OptionParser &op);
 
 //根据硬件信息配置工作组
-void GetOptimalWorkSize(const cl_context &context, int device, int &localWork, 
-	size_t *&WorkSize, size_t *&localWorkSize);
+void GetOptimalWorkSize(const cl_context &context, int device, int no_of_nodes, int &localWork, 
+	size_t *WorkSize, size_t *localWorkSize);
+
 
 //再增加一层中间层，用于从外层遍历不同节点，判断访问与否，未访问则进入bfs_opencl调用
 //相关状态数组创建、释放应该放到这里
-void ocl(int no_of_nodes, int edge_list_size, Node *&h_graph_nodes, int *&h_graph_edges,
-	int &localWork, cl_kernel kernel1, cl_kernel kernel2);
+void ocl(int no_of_nodes, int edge_list_size, uint32_t *&h_offsets, uint32_t *&h_edges,
+	int device, cl_context &context, cl_command_queue &commands, int &localWork, cl_kernel kernel1, cl_kernel kernel2);
 
 //bfs_opencl负责进入具体点进行执行，相当于遍历连通分量
 void bfs_opencl(int no_of_nodes, int source,
 		bool *&h_graph_mask, bool *&h_graph_visited, int *&h_cost, 
 		cl_mem &d_graph_mask, cl_mem &d_graph_visited, cl_mem &d_cost, cl_mem &d_over,
-		size_t *WorkSize, size_t *localWorkSize, cl_kernel kernel1, cl_kernel kernel2, int &k, double &kernel_time, double &transfer_time);
+		cl_command_queue &commands, size_t *WorkSize, size_t *localWorkSize, 
+		cl_kernel kernel1, cl_kernel kernel2, cl_event &ocdEvent, int &k, double &kernel_time, double &transfer_time);
 
 //辅助函数用于初始化
 cl_context create_context(cl_platform_id platform, cl_device_id device);
@@ -101,6 +103,7 @@ std::string get_device_specific_options(cl_device_id device);
 void compile_kernel(const std::string &kernelfilename, cl_context &context, int platform_index,
 	int device_index,cl_kernel &kernel1, cl_kernel &kernel2);
 
+void getElapsedTime(double &elapsedTime, cl_event event);
 
 int main(int argc, char** argv){
     //参数预设置
@@ -121,11 +124,13 @@ int main(int argc, char** argv){
 	//kernel文件名
 	std::string kernelfile = op.getOptionString("kernelFile");
 
+	printf("kernelfilename is %s\n", kernelfile);
+
 	//初始化环境
 	//ocd_initCL该函数初始化opencl环境，包括选择设备、创建计算环境等
 	cl_context context;
-	cl_command_queue commond;
-	ocd_initCL(platform, device, context, commond);
+	cl_command_queue commands;
+	ocd_initCL(platform, device, context, commands);
 	
 	int no_of_nodes = 0;
 	int edge_list_size = 0;
@@ -139,7 +144,7 @@ int main(int argc, char** argv){
 	auto start_t = high_resolution_clock::now();
 
 	// 编译内核（显示完整设备信息）
-	cl_kernel &kernel1;
+	cl_kernel kernel1;
 	cl_kernel kernel2;
 	compile_kernel(kernelfile, context, platform, device, kernel1, kernel2);
 
@@ -152,8 +157,8 @@ int main(int argc, char** argv){
     printf("Running bfs_cuda\n");
 	for (int i = 0; i < passes; i++) {
         printf("Pass %d:\n", i);
-		ocl(no_of_nodes, edge_list_size, h_graph_nodes, h_graph_edges,
-			localWork, kernel1, kernel2);
+		ocl(no_of_nodes, edge_list_size, offsets, edges,
+			device, context, commands, localWork, kernel1, kernel2);
     }
 
 	//释放kernel,program已在编译函数内释放
@@ -183,17 +188,8 @@ void opinit(OptionParser &op){
 	op.addOption("device", OPT_VECINT, "0", "specify device to run on", 'd');
 	//0 for default device
 	op.addOption("localworksize", OPT_VECINT, "0", "specify localWorkSize to run on", 'l');
-	op.addOption("kernelFile", OPT_STRING, "bfs_kernel.cl", "kernel file", 'k');
+	op.addOption("kernelFile", OPT_STRING, "../src/bfs_kernel.cl", "kernel file", 'k');
 	//可指定编译kernel文件的名字,默认为bfs_kernel.cl
-
-    // Add options for turn on/off CUDA features
-    // op.addOption("uvm", OPT_BOOL, "0", "enable CUDA Unified Virtual Memory, only demand paging");
-    // op.addOption("uvm-advise", OPT_BOOL, "0", "guide the driver about memory usage patterns");
-    // op.addOption("uvm-prefetch", OPT_BOOL, "0", "prefetch memory the specified destination device");
-    // op.addOption("uvm-prefetch-advise", OPT_BOOL, "0", "prefetch memory the specified destination device with memory guidance on");
-    // op.addOption("coop", OPT_BOOL, "0", "enable CUDA Cooperative Groups");
-    // op.addOption("dyn", OPT_BOOL, "0", "enable CUDA Dynamic Parallelism");
-    // op.addOption("graph", OPT_BOOL, "0", "enable CUDA Graphs");
 }
 
 cl_context create_context(cl_platform_id platform, cl_device_id device) {
@@ -214,7 +210,13 @@ cl_context create_context(cl_platform_id platform, cl_device_id device) {
 
 cl_command_queue create_command_queue(cl_context context, cl_device_id device) {
     cl_int err;
-    cl_command_queue queue = clCreateCommandQueueWithProperties(context, device, 0, &err);
+	cl_queue_properties queue_props[] = {
+		CL_QUEUE_PROPERTIES,       // 属性名：队列类型
+		CL_QUEUE_PROFILING_ENABLE, // 属性值：启用性能分析
+		0                          // 终止符（必须为0）
+	};
+    cl_command_queue queue = clCreateCommandQueueWithProperties(context, device, queue_props, &err);
+	//创建队列必须启用CL_QUEUE_PROFILING_ENABLE才能使用事件记录时间
     if (err != CL_SUCCESS) {
         fprintf(stderr, "Error creating command queue: %d\n", err);
         exit(EXIT_FAILURE);
@@ -364,7 +366,7 @@ void compile_kernel(const std::string &kernelfilename, cl_context &context, int 
 }
 
 //opencl相关初始化
-void ocd_initCL(int platform_id, int device_id, cl_context &context, cl_command_queue &commond)
+void ocd_initCL(int platform_id, int device_id, cl_context &context, cl_command_queue &commands)
 {
 	//根据输入的平台和设备的id进行对contex和command的初始化;
 
@@ -403,7 +405,9 @@ void ocd_initCL(int platform_id, int device_id, cl_context &context, cl_command_
 
     // 创建上下文和命令队列
     context = create_context(platforms[platform_index], devices[device_index]);
-    commond = create_command_queue(context, devices[device_index]);
+	//已在创建函数内开启事件时间记录
+    commands = create_command_queue(context, devices[device_index]);
+	
 
     printf("Successfully initialized OpenCL context on:\n");
     printf("  Platform %u: ", platform_index);
@@ -482,7 +486,7 @@ void initGraph(const std::string &filename, int &no_of_nodes, int &edge_list_siz
 
 
 void ocl(int no_of_nodes, int edge_list_size, uint32_t *&h_offsets, uint32_t *&h_edges,
-	 int &localWork, cl_kernel kernel1, cl_kernel kernel2){
+	int device, cl_context &context, cl_command_queue &commands, int &localWork, cl_kernel kernel1, cl_kernel kernel2){
 	//函数功能:
 	//分配状态相关数组、存结果数组并初始化
 	//分配设备内存，避免每次在内层函数分配
@@ -517,17 +521,6 @@ void ocl(int no_of_nodes, int edge_list_size, uint32_t *&h_offsets, uint32_t *&h
 	
 
 	//设备内存创建
-	uint32_t *d_offsets = nullptr;
-    uint32_t *d_edges = nullptr;
-	// mask
-	bool* d_graph_mask = nullptr;
-	bool* d_updating_graph_mask = nullptr;
-	// visited nodes
-	bool* d_graph_visited = nullptr;
-	// result
-	int* d_cost = nullptr;
-	// bool if execution is over
-	bool *d_over = nullptr;
 	//计算大小
 	int offsets_size = sizeof(uint32_t) * (no_of_nodes + 1);
 	int edges_size = sizeof(uint32_t) * edge_list_size;
@@ -607,7 +600,7 @@ void ocl(int no_of_nodes, int edge_list_size, uint32_t *&h_offsets, uint32_t *&h
 	//设置kernel启动参数
 	size_t WorkSize[1];
 	size_t localWorkSize[1];
-	GetOptimalWorkSize(context, device, localWork, WorkSize, localWorkSize);
+	GetOptimalWorkSize(context, device, no_of_nodes, localWork, WorkSize, localWorkSize);
 	
 
 	//遍历所有节点，未访问就进入遍历
@@ -620,7 +613,8 @@ void ocl(int no_of_nodes, int edge_list_size, uint32_t *&h_offsets, uint32_t *&h
 			bfs_opencl(no_of_nodes, i,
 				h_graph_mask, h_graph_visited, h_cost, 
 				d_graph_mask, d_graph_visited, d_cost, d_over,
-				WorkSize, localWorkSize, kernel1, kernel2, k, kernel_time, transfer_time);
+				commands, WorkSize, localWorkSize, kernel1, kernel2,
+				ocdTempEvent, k, kernel_time, transfer_time);
 		}
 	}
 
@@ -643,6 +637,9 @@ void ocl(int no_of_nodes, int edge_list_size, uint32_t *&h_offsets, uint32_t *&h
     printf("graph_block is %d\n", cnt);
     printf("kernel_exe_times are %d\n", k);
 
+	// 释放事件
+    clReleaseEvent(ocdTempEvent);
+
 	//device mem release
 	clReleaseMemObject(d_offsets);
 	clReleaseMemObject(d_edges);
@@ -663,35 +660,34 @@ void ocl(int no_of_nodes, int edge_list_size, uint32_t *&h_offsets, uint32_t *&h
 void bfs_opencl(int no_of_nodes, int source,
 	 bool *&h_graph_mask, bool *&h_graph_visited, int *&h_cost, 
 	 cl_mem &d_graph_mask, cl_mem &d_graph_visited, cl_mem &d_cost, cl_mem &d_over,
-	 size_t *WorkSize, size_t *localWorkSize, cl_kernel kernel1, cl_kernel kernel2, int &k, double &kernel_time, double &transfer_time){
+	 cl_command_queue &commands, size_t *WorkSize, size_t *localWorkSize, cl_kernel kernel1, 
+	 cl_kernel kernel2, cl_event &ocdEvent, int &k, double &kernel_time, double &transfer_time){
 	
-	//set the source node as true in the mask
+	//set the source node
 	h_graph_mask[source]=true;
 	h_graph_visited[source]=true;
 	h_cost[source]=0;
 
-	cl_event ocdTempEvent;
 	//需要将更改的source相关值传递到设备端
 	//只拷贝source节点，该值取值范围为[0,no_of_nodes)
-	//index为source的节点前面有source个节点
 	//这里与cuda不同，cuda偏移量就是元素，而opencl内是字节偏移量
 	int byte_offset_b = sizeof(bool) * source;//b for bool，设备端偏移量
 	int byte_offset_i = sizeof(int) * source;//i for int，设备端偏移量
     //拷贝source相关值
-	clEnqueueWriteBuffer(commands, d_graph_mask, CL_TRUE, byte_offset_b, sizeof(bool), &h_graph_mask[source], 0, NULL, &ocdTempEvent);
+	clEnqueueWriteBuffer(commands, d_graph_mask, CL_TRUE, byte_offset_b, sizeof(bool), &h_graph_mask[source], 0, NULL, &ocdEvent);
 	clFinish(commands);
 	double elapsedTime = 0;
-	getElapsedTime(elapsedTime, ocdTempEvent);
+	getElapsedTime(elapsedTime, ocdEvent);
 	transfer_time += elapsedTime;
 
-	clEnqueueWriteBuffer(commands, d_graph_visited, CL_TRUE, byte_offset_b, sizeof(bool), &h_graph_mask[source], 0, NULL, &ocdTempEvent);
+	clEnqueueWriteBuffer(commands, d_graph_visited, CL_TRUE, byte_offset_b, sizeof(bool), &h_graph_mask[source], 0, NULL, &ocdEvent);
 	clFinish(commands);
-	getElapsedTime(elapsedTime, ocdTempEvent);
+	getElapsedTime(elapsedTime, ocdEvent);
 	transfer_time += elapsedTime;
 
-	clEnqueueWriteBuffer(commands, d_cost, CL_TRUE, byte_offset_i, sizeof(int), &h_graph_mask[source], 0, NULL, &ocdTempEvent);
+	clEnqueueWriteBuffer(commands, d_cost, CL_TRUE, byte_offset_i, sizeof(int), &h_graph_mask[source], 0, NULL, &ocdEvent);
 	clFinish(commands);
-	getElapsedTime(elapsedTime, ocdTempEvent);
+	getElapsedTime(elapsedTime, ocdEvent);
 	transfer_time += elapsedTime;
 
 	bool stop;
@@ -699,16 +695,16 @@ void bfs_opencl(int no_of_nodes, int source,
 	{
 		stop = false;
 		//Copy stop to device
-		clEnqueueWriteBuffer(commands, d_over, CL_TRUE, 0, sizeof(bool), (void*)&stop, 0, NULL, &ocdTempEvent);
+		clEnqueueWriteBuffer(commands, d_over, CL_TRUE, 0, sizeof(bool), (void*)&stop, 0, NULL, &ocdEvent);
 		clFinish(commands);
-		getElapsedTime(elapsedTime, ocdTempEvent);
+		getElapsedTime(elapsedTime, ocdEvent);
 		transfer_time += elapsedTime;
 
 		//Run Kernel1 
 		cl_int err = clEnqueueNDRangeKernel(commands, kernel1, 1, NULL,
-				WorkSize, localWorkSize, 0, NULL, &ocdTempEvent);
+				WorkSize, localWorkSize, 0, NULL, &ocdEvent);
 		clFinish(commands);
-		getElapsedTime(elapsedTime, ocdTempEvent);
+		getElapsedTime(elapsedTime, ocdEvent);
 		kernel_time += elapsedTime;
 
 		if(err != CL_SUCCESS)
@@ -716,25 +712,23 @@ void bfs_opencl(int no_of_nodes, int source,
 		
 		//Run Kernel 2
 		err = clEnqueueNDRangeKernel(commands, kernel2, 1, NULL,
-				WorkSize, localWorkSize, 0, NULL, &ocdTempEvent);
+				WorkSize, localWorkSize, 0, NULL, &ocdEvent);
 		clFinish(commands);
-		getElapsedTime(elapsedTime, ocdTempEvent);
+		getElapsedTime(elapsedTime, ocdEvent);
 		kernel_time += elapsedTime;
 
 		if(err != CL_SUCCESS)
 			printf("Error occurred running kernel2.\n");
 
 		//Copy stop from device
-		clEnqueueReadBuffer(commands, d_over, CL_TRUE, 0, sizeof(bool), (void*)&stop, 0, NULL, &ocdTempEvent);
+		clEnqueueReadBuffer(commands, d_over, CL_TRUE, 0, sizeof(bool), (void*)&stop, 0, NULL, &ocdEvent);
 		clFinish(commands);
-		getElapsedTime(elapsedTime, ocdTempEvent);
+		getElapsedTime(elapsedTime, ocdEvent);
 		transfer_time += elapsedTime;
 
 		k++;
 	}while(stop);
 
-
-	//copy result form device to host
 	//三个状态数组
 	//d_graph_mask无需拷贝回去，外面没用到，留在设备上共享就行
 	//d_updating_graph_mask也无需拷贝回去，只有kernel内用到
@@ -743,16 +737,16 @@ void bfs_opencl(int no_of_nodes, int source,
 	int byte_offset = (source) * sizeof(bool);//设备端的字节偏移量
 	int count = no_of_nodes-source;//左闭右开区间
 	bool *host_ptr = h_graph_visited + source;
-	clEnqueueReadBuffer(commands, d_graph_visited, CL_TRUE, byte_offset, sizeof(bool)*count, (void*)host_ptr, 0, NULL, &ocdTempEvent);
+	clEnqueueReadBuffer(commands, d_graph_visited, CL_TRUE, byte_offset, sizeof(bool)*count, (void*)host_ptr, 0, NULL, &ocdEvent);
 	clFinish(commands);
-	getElapsedTime(elapsedTime, ocdTempEvent);
+	getElapsedTime(elapsedTime, ocdEvent);
 	transfer_time += elapsedTime;
 }
 
 // 自动选择最佳本地工作组大小
 //传参数进去后，自动设置localWork， WorkSize， localWorkSize
-void GetOptimalWorkSize(const cl_context &context, int device, int &localWork, 
-	size_t *&WorkSize, size_t *&localWorkSize){
+void GetOptimalWorkSize(const cl_context &context, int device, int no_of_nodes, int &localWork, 
+	size_t *WorkSize, size_t *localWorkSize){
     //cuda与opencl术语对应关系
 	//Thread		Work Item   			完全对应，最小执行单元
 	//Block	    	Work Group  			同步方式相同 (barrier)
@@ -781,18 +775,13 @@ void GetOptimalWorkSize(const cl_context &context, int device, int &localWork,
 	}
 	//设置全局工作项总数，根据总节点数变化
 	//WorkSize对应CUDA中的gridDim.x * blockDim.x（1d）
-	WorkSize[1] = {((no_of_nodes + localWork - 1) / localWork) * localWork};
+	WorkSize[0] = {((no_of_nodes + localWork - 1) / localWork) * localWork};
 	//localWorkSize对应CUDA的Block Size
 	//最终确定本地工作组大小
-	localWorkSize[1] = {localWork};//这里用1d相当于blockDim.x
+	localWorkSize[0] = {localWork};//这里用1d相当于blockDim.x
 }
 
 
-/**
- * @brief 计算 OpenCL 事件的执行时间（秒）
- * @param elapsedTime 输出参数，返回事件耗时（单位：秒）
- * @param event 要计时的 OpenCL 事件对象
- */
 void getElapsedTime(double &elapsedTime, cl_event event) {
     cl_int err = CL_SUCCESS;
     
