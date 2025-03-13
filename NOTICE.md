@@ -18,5 +18,5 @@
 - ​**来源**: [Opendwarf2025](https://github.com/uva-trasgo/OpenDwarfs2025)
 - ​**用途**: bfs的OpenCL版本实验
 - ​**版权声明**: Copyright (c) [2011-2015] [Virginia Polytechnic Institute and State University]
-- ​**许可证**: [Opendwarf许可证](licenses/opendwarf.txt)
+- ​**许可证**: [Opendwarf许可证](licenses/opendwarfs.txt)
 - ​**代码位置**: `src/bfs_ocl.cpp, src/bfs_kernel.cl`
