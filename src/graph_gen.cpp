@@ -1,3 +1,10 @@
+// src/graph_gen.cpp
+// ================================
+// 该代码使用了SNAP库 (https://snap.stanford.edu)的图生成相关代码
+// Copyright (c) 2007-2019, Jure Leskovec
+// 类BSD-3条款许可证见本项目根目录的 licenses/SNAP.txt
+// ================================
+
 /***
  * 程序功能：根据图节点数和节点平均度生成ER图，并将其以CSR二进制格式存储下来，方便后续使用,该csr文件适配gunrock的csr格式；
  * 用法 ./graph_gen  -n nodes -d average_degree
@@ -6,8 +13,9 @@
  *  CSRBinHeader header;
  *  uint32_t offsets[header.num_nodes + 1];
  *  uint32_t indices[header.num_edges];
- * 
  */
+
+
 #include "Snap.h"
 #include <fstream>
 #include <vector>

@@ -1,3 +1,10 @@
+// src/bfs_kernel.cpp
+// ================================
+// 该代码使用了[Opendwarf2025](https://github.com/uva-trasgo/OpenDwarfs2025)代码并对其进行了部分修改
+// Copyright (c) [2011-2015] [Virginia Polytechnic Institute and State University]
+// GNU Lesser General Public License许可证见本项目根目录的 licenses/opdwarfs.txt
+// ================================
+
 
 __kernel void kernel1(__global const uint* g_offsets,
 		__global uint* g_edges,

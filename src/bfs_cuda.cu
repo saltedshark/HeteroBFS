@@ -1,3 +1,10 @@
+// src/bfs_cuda.cu
+// ================================
+// 该代码使用了[Altis](https://github.com/utcs-scea/altis)代码并对其进行了部分修改
+// Copyright (c) 2021, Bodun Hu, et al.
+// [BSD-2条款]许可证见本项目根目录的licenses/altis.txt
+// ================================
+
 /***
  * 函数功能：使用cuda并行的bfs对图进行遍历，不管图有没有连通
  * 将普通cuda版本和uvm，uvm-advise，uvm-prefetch，uvm-advise-prefetch集成到一起
