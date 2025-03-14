@@ -430,11 +430,12 @@ float BFSGraph(int no_of_nodes, int edge_list_size, uint32_t *&h_offsets, uint32
     free( current_queue);
 	
     //时间统输出一记录
-    printf("total_time is %f seconds\n", total_time);
-    printf("transfer_time is %f seconds\n", transfer_time);
-    printf("kernel_time is %f seconds\n", kernel_time);
-    printf("graph_block is %d\n", cnt);
-    printf("kernel_exe_times are %d\n", k);
+    printf("Time record(seconds)\n");
+    printf("total_time : %f\n", total_time);
+    printf("transfer_time : %f\n", transfer_time);
+    printf("kernel_time : %f\n", kernel_time);
+    printf("graph_block : %d\n", cnt);
+    printf("kernel_exe_times : %d\n", k);
 
     return total_time;
 }
@@ -595,11 +596,14 @@ float BFSGraphUnifiedMemory(OptionParser &op, int no_of_nodes, int edge_list_siz
 	cudaFree(visited);
 	cudaFree(cost);
 
+
     //时间统输出一记录
-    printf("total_time is %f seconds\n", total_time);
-    printf("kernel_time is %f seconds\n", kernel_time);
-    printf("graph_block is %d\n", cnt);
-    printf("kernel_exe_times are %d\n", k);
+    printf("Time record(seconds)\n");
+    printf("total_time : %f\n", total_time);
+    //printf("transfer_time : %f\n", transfer_time);
+    printf("kernel_time : %f\n", kernel_time);
+    printf("graph_block : %d\n", cnt);
+    printf("kernel_exe_times : %d\n", k);
 
     return total_time;
 }

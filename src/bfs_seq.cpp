@@ -180,8 +180,15 @@ void seq(int no_of_nodes, int edge_list_size, uint32_t *&offsets, uint32_t *&edg
     auto end_t = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(end_t - start_t);
     double total_time = double(duration.count()) * microseconds::period::num / microseconds::period::den;
-    printf("total_time is %f seconds\n", total_time);
-    printf("graph_block is %d\n", cnt);
+
+    //时间统输出一记录
+    printf("Time record(seconds)\n");
+    printf("total_time : %f\n", total_time);
+    //printf("transfer_time : %f\n", transfer_time);
+    //printf("kernel_time : %f\n", kernel_time);
+    printf("graph_block : %d\n", cnt);
+    //printf("kernel_exe_times : %d\n", k);
+
     //清理内存
     free(h_graph_visited);
     free(h_cost);

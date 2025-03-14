@@ -191,24 +191,19 @@ void omp(int no_of_nodes, int edge_list_size, uint32_t *&offsets, uint32_t *&edg
     // 设置OpenMP线程数
     omp_set_num_threads(num_omp_threads);
 
-	//initialize the mem
-    #pragma omp parallel for
-	for(int i = 0; i < no_of_nodes; i++){
-		h_graph_mask[i] = false;
-		h_updating_graph_mask[i] = false;
-		h_graph_visited[i] = false;
-		h_cost[i]=-1;
-	}
+	
     //初始化相关数组
-    // memset(h_graph_mask, 0, no_of_nodes * sizeof(bool));
-    // memset(h_updating_graph_mask, 0, no_of_nodes * sizeof(bool));
-    // memset(h_graph_visited, 0, no_of_nodes * sizeof(bool));
-    // memset(h_cost, -1, no_of_nodes * sizeof(int));
+    memset(h_graph_mask, 0, no_of_nodes * sizeof(bool));
+    memset(h_updating_graph_mask, 0, no_of_nodes * sizeof(bool));
+    memset(h_graph_visited, 0, no_of_nodes * sizeof(bool));
+    memset(h_cost, -1, no_of_nodes * sizeof(int));
 
 	//遍历所有节点，未访问就进入遍历
+    int cnt = 0;
 	for(int i = 0; i < no_of_nodes; i++){
 		//未访问才进入遍历
 		if(!h_graph_visited[i]){
+            cnt++;
             #if OPTIMIZE_LEVEL == 0
             bfs_omp(no_of_nodes, i, offsets, edges,
                 h_graph_mask, h_updating_graph_mask,
@@ -229,7 +224,15 @@ void omp(int no_of_nodes, int edge_list_size, uint32_t *&offsets, uint32_t *&edg
     auto end_t = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(end_t - start_t);
     double total_time = double(duration.count()) * microseconds::period::num / microseconds::period::den;
-    printf("total_time is %f seconds\n", total_time);
+
+
+    //时间统输出一记录
+    printf("Time record(seconds)\n");
+    printf("total_time : %f\n", total_time);
+    //printf("transfer_time : %f\n", transfer_time);
+    //printf("kernel_time : %f\n", kernel_time);
+    printf("graph_block : %d\n", cnt);
+    //printf("kernel_exe_times : %d\n", k);
 
     //清理内存
     free(h_graph_mask);
@@ -269,10 +272,8 @@ void bfs_omp( int no_of_nodes, int source,
                 // 遍历邻接表
                 const uint32_t start = offsets[node];
                 const uint32_t end = offsets[node + 1];
-
                 for (uint32_t i = start; i < end; ++i) {
                     const uint32_t neighbor = edges[i];
-
                     // 原子操作避免竞争
                     if (!h_graph_visited[neighbor]) {
                         #pragma omp atomic write
@@ -291,6 +292,7 @@ void bfs_omp( int no_of_nodes, int source,
         }
 
         // 交换掩码并重置下一层
+        //值交换
         #pragma omp parallel for
         for (int i = 0; i < no_of_nodes; ++i) {
             h_graph_mask[i] = h_updating_graph_mask[i];
@@ -395,11 +397,9 @@ void bfs_omp_optimized( int no_of_nodes, int source,
                     // 原子操作避免竞争
                     if (!h_graph_visited[neighbor]) {
                         #pragma omp atomic write
-                        h_cost[neighbor] = h_cost[node] + 1;
-
-                        #pragma omp atomic write
                         h_graph_visited[neighbor] = true;
-
+                        #pragma omp atomic write
+                        h_cost[neighbor] = h_cost[node] + 1;
                         #pragma omp atomic write
                         h_updating_graph_mask[neighbor] = true;
 
