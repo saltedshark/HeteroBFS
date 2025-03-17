@@ -516,7 +516,7 @@ float BFSGraphUnifiedMemory(OptionParser &op, int no_of_nodes, int edge_list_siz
     memset(next_queue, -1, sizeof(int)*no_of_nodes);
     memset(current_size, 0, sizeof(int));
     memset(next_size, 0, sizeof(int));
-    memset(visited, 0, sizeof(uint32_t)*visited_size);
+    memset(visited, 0, visited_size);
     memset(cost, -1, sizeof(int)*no_of_nodes);
 
     //graph_offsets和graph_edges都是设备只读
@@ -629,7 +629,7 @@ void cuda_bfs_edge_uvm(OptionParser &op, int no_of_nodes, int source,
         const bool uvm_advise = op.getOptionBool("uvm-advise");
         const bool uvm_prefetch_advise = op.getOptionBool("uvm-prefetch-advise");
         
-        int visited_size = sizeof(uint32_t) * (no_of_nodes + 31) / 32;
+        int visited_size = sizeof(uint32_t) * ((no_of_nodes + 31) / 32);
 
         //set the source node as true in the mask and cost
         int word_idx = source / 32;

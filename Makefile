@@ -37,6 +37,11 @@ CUDA_SOURCES := $(wildcard $(SRC_DIR)/*.cu)
 # CUDA可执行文件              
 CUDA_EXECUTABLES := $(patsubst $(SRC_DIR)/%.cu, $(BIN_DIR)/%, $(CUDA_SOURCES))
 
+#include组件
+# 需要提前编译的C++源文件（自动扫描include目录下所有.cpp），纯头文件（如 cudacommon.h）无需特殊处理，代码包含就直接使用了
+CPP_SRCS := $(wildcard $(INCLUDE_DIR)/*.cpp)  # 例如：OptionParser.cpp
+CPP_OBJS := $(patsubst $(INCLUDE_DIR)/%.cpp, $(BIN_DIR)/%.o, $(CPP_SRCS))
+
 
 # 程序分类
 # OpenCL程序列表
@@ -51,20 +56,18 @@ SNAP_PROGRAMS := testsnap graph_gen
 # 主目标：编译所有程序（包含CUDA）
 all: $(EXECUTABLES) $(CUDA_EXECUTABLES)
 
+# #公共include文件
+# 编译include目录下的C++实现文件（如OptionParser.cpp）
+$(BIN_DIR)/%.o: $(INCLUDE_DIR)/%.cpp | $(BIN_DIR)
+	@echo "=== 编译公共组件-C++对象文件：$@ ==="
+	$(CXX) $(CXXFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
+
 # OpenCL程序规则，包含include内头文件
 $(foreach prog,$(OPENCL_PROGRAMS),$(BIN_DIR)/$(prog)): $(BIN_DIR)/%: $(SRC_DIR)/%.cpp $(CPP_OBJS) | $(BIN_DIR)
 	@echo "=== 编译OpenCL程序：$@ ==="
 	$(CXX) $(CXXFLAGS) $(OPENCL_CXXFLAGS) -I$(INCLUDE_DIR) $< $(CPP_OBJS) -o $@ $(OPENCL_LDFLAGS) $(LDFLAGS)
 
 # CUDA程序编译规则，先编译对应cpp文件、cu文件，然后最后再一起链接
-# 需要编译的C++源文件（自动扫描include目录下所有.cpp），纯头文件（如 cudacommon.h）无需特殊处理，代码包含就直接使用了
-CPP_SRCS := $(wildcard $(INCLUDE_DIR)/*.cpp)  # 例如：OptionParser.cpp
-CPP_OBJS := $(patsubst $(INCLUDE_DIR)/%.cpp, $(BIN_DIR)/%.o, $(CPP_SRCS))
-# 编译include目录下的C++实现文件（如OptionParser.cpp）
-$(BIN_DIR)/%.o: $(INCLUDE_DIR)/%.cpp | $(BIN_DIR)
-	@echo "=== 编译C++对象文件：$@ ==="
-	$(CXX) $(CXXFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
-
 $(CUDA_EXECUTABLES): $(BIN_DIR)/%: $(SRC_DIR)/%.cu $(CPP_OBJS) | $(BIN_DIR)
 	@echo "=== 编译CUDA程序：$@ ==="
 	$(NVCC) $(NVCCFLAGS) $< $(CPP_OBJS) -o $@ $(NVCC_LDFLAGS) -lstdc++

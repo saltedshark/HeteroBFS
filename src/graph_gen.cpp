@@ -42,7 +42,7 @@ std::string FormatNodeCount(int64_t nodes) {
 }
 
 // 生成并保存适配Gunrock的CSR格式
-void GenerateERGraphForGunrock(int64_t num_nodes, int avg_degree) {
+void GenerateERGraphForGunrock(int64_t num_nodes, int avg_degree, int seed) {
     //节点数量限制在32位范围
     // 参数校验（32位范围校验）
     if (num_nodes > UINT32_MAX) {
@@ -65,7 +65,11 @@ void GenerateERGraphForGunrock(int64_t num_nodes, int avg_degree) {
     }
 
     // 生成无向图
-    PUNGraph graph = TSnap::GenRndGnm<PUNGraph>(num_nodes, num_edges, false);
+    // TRnd& default_rnd = TInt::Rnd; // 默认随机数生成器
+    // printf("当前种子: %u\n", default_rnd.GetSeed());
+    TRnd rnd(seed);  //指定随机种子，便于复现
+    printf("当前随机种子: %u\n", rnd.GetSeed());
+    PUNGraph graph = TSnap::GenRndGnm<PUNGraph>(num_nodes, num_edges, false, rnd);
 
     // 构建CSR数据结构
     std::vector<uint32_t> offsets(num_nodes + 1, 0);
@@ -121,6 +125,7 @@ int main(int argc, char* argv[]) {
     // 参数解析
     int64_t num_nodes = 0;
     int avg_degree = 0;
+    int seed = -1;// 初始化为 -1 表示未设置
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -128,20 +133,26 @@ int main(int argc, char* argv[]) {
             num_nodes = std::atoll(argv[++i]);
         } else if ((arg == "-d" || arg == "--degree") && i + 1 < argc) {
             avg_degree = std::atoi(argv[++i]);
+        } else if ((arg == "-s" || arg == "--seed") && i + 1 < argc) {
+            seed = std::atoi(argv[++i]);
+        }else {
+            std::cerr << "未知或无效参数: " << arg << std::endl;
+            return 1;
         }
     }
 
     // 校验必要参数
-    if (num_nodes <= 0 || avg_degree < 0) {
-        std::cerr << "用法: " << argv[0] << " -n <节点数> -d <平均度>\n"
-                  << "示例: " << argv[0] << " -n 1000 -d 10"
+    if (num_nodes <= 0 || avg_degree < 0 || seed < 0) {// seed 必须 ≥0
+        std::cerr << "用法: " << argv[0] << " -n <节点数> -d <平均度> -s <随机种子>\n"
+                  << "示例: " << argv[0] << " -n 1000 -d 10 -s 12345\n"
+                  << "注意: 种子必须是非负整数"
                   << std::endl;
         return 1;
     }
 
     // 执行生成逻辑
     try {
-        GenerateERGraphForGunrock(num_nodes, avg_degree);
+        GenerateERGraphForGunrock(num_nodes, avg_degree, seed);
     } catch (const std::exception& e) {
         std::cerr << "生成失败: " << e.what() << std::endl;
         return 2;
