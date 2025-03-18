@@ -30,7 +30,20 @@ using namespace std::chrono;
 #include "OptionParser.h"//for arguments parse
 #include "cudacommon.h" //for checkCudaErrors，assert
 #include <cfloat>//for FLT_MAX
-#include <algorithm>//for sort
+
+#include <thrust/sort.h>
+#include <thrust/execution_policy.h>
+
+//thrust排序使用
+struct CompareOffsets {
+    const uint32_t* offsets_;
+    CompareOffsets(const uint32_t* offsets) : offsets_(offsets) {}
+    __host__ __device__
+    bool operator()(const int a, const int b) const {
+        return offsets_[a] < offsets_[b];
+    }
+};
+
 
 // CSR二进制文件头（兼容Gunrock）
 struct CSRHeader {
@@ -819,19 +832,16 @@ void cuda_bfs_edge( int no_of_nodes, int source, uint32_t *&h_offsets,int *curre
             // 重置下一层队列大小
             cudaMemset(d_next_size, 0, sizeof(int));
             
-            // 主机端对current_queue排序处理，便于内核使用二分法找src_node,也方便找total_edges
+            //移除排序操作，改为设备端排序
+            // 设备端排序current_queue
+            thrust::sort(thrust::device, d_current_queue, d_current_queue + current_size_host, 
+            CompareOffsets(d_offsets));
+
+            // 获取最后一个节点计算总边数
+            int last_node;
             cudaEventRecord(tstart, 0);
-            CUDA_SAFE_CALL(cudaMemcpy(current_queue, d_current_queue, current_size_host * sizeof(int), cudaMemcpyDeviceToHost));
-            cudaEventRecord(tstop, 0);
-            cudaEventSynchronize(tstop);
-            cudaEventElapsedTime(&elapsedTime, tstart, tstop);
-            transfer_time += elapsedTime * 1.e-3;
-            std::sort(current_queue, current_queue + current_size_host, 
-            [&h_offsets](int a, int b) { return h_offsets[a] < h_offsets[b]; });
-            // 再拷贝到设备端
-            cudaEventRecord(tstart, 0);
-            CUDA_SAFE_CALL(cudaMemcpy(d_current_queue, current_queue, 
-            current_size_host * sizeof(int), cudaMemcpyHostToDevice));
+            CUDA_SAFE_CALL(cudaMemcpy(&last_node, d_current_queue + current_size_host - 1, 
+                                    sizeof(int), cudaMemcpyDeviceToHost));
             cudaEventRecord(tstop, 0);
             cudaEventSynchronize(tstop);
             cudaEventElapsedTime(&elapsedTime, tstart, tstop);
@@ -839,7 +849,6 @@ void cuda_bfs_edge( int no_of_nodes, int source, uint32_t *&h_offsets,int *curre
             
             // 配置内核参数
             //当前层总边数，需要全局的边id，即offsets对应
-            int last_node = current_queue[current_size_host-1];
             int total_edges = h_offsets[last_node + 1];//last_node对应的所有边
             int grid_size = (total_edges + block_size - 1) / block_size;
             //需要判断下吧？会不会超限？

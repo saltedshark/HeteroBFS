@@ -22,7 +22,10 @@
 #include <cstdint>
 #include <iostream>
 #include <cstdlib>  // 用于参数解析
-
+#include <cmath> //for round
+#include <algorithm> //for sort
+#include <sstream>
+#include <iomanip>
 // CSR二进制文件头（兼容Gunrock）
 struct CSRHeader {
     uint32_t magic = 0x47535246;  // 'GSRF'的ASCII码十六进制表示
@@ -42,7 +45,7 @@ std::string FormatNodeCount(int64_t nodes) {
 }
 
 // 生成并保存适配Gunrock的CSR格式
-void GenerateERGraphForGunrock(int64_t num_nodes, int avg_degree, int seed) {
+void GenerateERGraphForGunrock(int64_t num_nodes, double avg_degree, int seed) {
     //节点数量限制在32位范围
     // 参数校验（32位范围校验）
     if (num_nodes > UINT32_MAX) {
@@ -53,7 +56,7 @@ void GenerateERGraphForGunrock(int64_t num_nodes, int avg_degree, int seed) {
     }
 
     // 计算边数并校验合理性
-    const int64_t num_edges = (num_nodes * avg_degree) / 2;
+    const int64_t num_edges = round((num_nodes * avg_degree) / 2);//取整
     const int64_t max_possible_edges = num_nodes * (num_nodes - 1) / 2;
     
     if (num_edges > max_possible_edges) {
@@ -104,9 +107,33 @@ void GenerateERGraphForGunrock(int64_t num_nodes, int avg_degree, int seed) {
         }
     }
 
+    // +++++++++++ 新增排序代码 ++++++++++++
+    // 对每个节点的邻接列表进行升序排序
+    for (uint32_t node = 0; node < num_nodes; ++node) {
+        const uint32_t start_idx = offsets[node];
+        const uint32_t end_idx = offsets[node + 1];
+        
+        if (end_idx > start_idx) {  // 确保有邻居才排序
+            auto begin_it = edges.begin() + start_idx;
+            auto end_it = edges.begin() + end_idx;
+            std::sort(begin_it, end_it);
+            
+            // 去重（如果需要）
+            // end_it = std::unique(begin_it, end_it);
+            // edges.resize(end_it - edges.begin());
+        }
+    }
+    // +++++++++++ 新增代码结束 ++++++++++++
+
     // 生成文件名
+    // 在生成文件名的代码段修改为：
+    //确保转换只保留1位小数，输入时是保证1位小数的，正常to_string后面会有很多0
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(1) << avg_degree;  // 强制显示1位小数
+    std::string degree_str = ss.str();
+
     std::string filename = "graph" + FormatNodeCount(num_nodes) + 
-                          "_d" + std::to_string(avg_degree) + 
+                          "_d" + degree_str + 
                           "_gunrock.csr.bin";
 
     // 写入二进制文件
@@ -124,7 +151,7 @@ void GenerateERGraphForGunrock(int64_t num_nodes, int avg_degree, int seed) {
 int main(int argc, char* argv[]) {
     // 参数解析
     int64_t num_nodes = 0;
-    int avg_degree = 0;
+    double avg_degree = 0;
     int seed = -1;// 初始化为 -1 表示未设置
 
     for (int i = 1; i < argc; ++i) {
@@ -132,7 +159,7 @@ int main(int argc, char* argv[]) {
         if ((arg == "-n" || arg == "--nodes") && i + 1 < argc) {
             num_nodes = std::atoll(argv[++i]);
         } else if ((arg == "-d" || arg == "--degree") && i + 1 < argc) {
-            avg_degree = std::atoi(argv[++i]);
+            avg_degree = std::atof(argv[++i]);
         } else if ((arg == "-s" || arg == "--seed") && i + 1 < argc) {
             seed = std::atoi(argv[++i]);
         }else {
