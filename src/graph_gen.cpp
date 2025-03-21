@@ -129,7 +129,7 @@ void GenerateERGraphForGunrock(int64_t num_nodes, double avg_degree, int seed) {
     // 在生成文件名的代码段修改为：
     //确保转换只保留1位小数，输入时是保证1位小数的，正常to_string后面会有很多0
     std::stringstream ss;
-    ss << std::fixed << std::setprecision(1) << avg_degree;  // 强制显示1位小数
+    ss << std::fixed << std::setprecision(2) << avg_degree;  // 强制显示1位小数
     std::string degree_str = ss.str();
 
     std::string filename = "graph" + FormatNodeCount(num_nodes) + 
