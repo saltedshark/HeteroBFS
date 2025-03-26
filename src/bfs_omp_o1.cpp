@@ -20,9 +20,9 @@ using namespace std::chrono;
 #include <vector>
 
 
-#define OPTIMIZE_LEVEL 0
+#define OPTIMIZE_LEVEL 1
 //优化等级
-//分0,1,2
+//分0,1,2，3
 //0 for 原始版本
 //1 for 将当前层与下一层状态修改分开
 //2 for 在原始版本基础上使用局部缓存去除原子竞争
@@ -313,13 +313,11 @@ void bfs_omp_apart( int no_of_nodes, int source,
     //h_graph_mask: 当前活跃节点层
     //​h_updating_graph_mask: 下一层节点收集器
     
-
 	//set the source node as true in the mask
     h_graph_mask[source] = true;
 	h_graph_visited[source]=true;
 	h_cost[source]=0;
 
-    
     bool has_active = true;
 
     // BFS层级迭代
@@ -329,7 +327,7 @@ void bfs_omp_apart( int no_of_nodes, int source,
         #pragma omp parallel for
         for (int node = 0; node < no_of_nodes; ++node) {
             if (h_graph_mask[node]) {
-                h_graph_mask[node] = false;
+                h_graph_mask[node] = false;//移出当前层
                 // 遍历邻接表
                 const uint32_t start = offsets[node];
                 const uint32_t end = offsets[node + 1];
@@ -347,14 +345,12 @@ void bfs_omp_apart( int no_of_nodes, int source,
         // 交换掩码并重置下一层
         #pragma omp parallel for reduction(||:has_active)
         for (int i = 0; i < no_of_nodes; ++i) {
-            h_graph_mask[i] = h_updating_graph_mask[i];
-            h_updating_graph_mask[i] = false;
             if(h_updating_graph_mask[i]){
-                h_graph_mask[i] = true;
+                h_graph_mask[i] = true;//加入当前层
                 h_graph_visited[i] = true;
-                h_updating_graph_mask[i] = true;
                 has_active = true;
-            }                
+                h_updating_graph_mask[i] = false;//重置   
+            }           
         }
     }
 }

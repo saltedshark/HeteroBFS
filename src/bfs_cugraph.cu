@@ -284,6 +284,7 @@ int32_t find_first_unvisited(int32_t* d_distances,int32_t num_vertices)
     return (it != end) ? *it : -1;//使用-1表示未找到
 }
 
+
 void inner_bfs(
     cugraph_resource_handle_t* handle,
     cugraph_graph_t* graph,

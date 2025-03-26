@@ -20,9 +20,9 @@ using namespace std::chrono;
 #include <vector>
 
 
-#define OPTIMIZE_LEVEL 0
+#define OPTIMIZE_LEVEL 2
 //优化等级
-//分0,1,2
+//分0,1,2，3
 //0 for 原始版本
 //1 for 将当前层与下一层状态修改分开
 //2 for 在原始版本基础上使用局部缓存去除原子竞争

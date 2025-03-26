@@ -12,7 +12,8 @@
 7. scripts, 存放执行脚本
 
 ## 编译说明
-1. 编译具体程序时，直接执行make bin/program即可，如果程序有用到snap库内的内容，还需要在Makefile内的"需要链接SNAP的程序列表"处添加使用到的snap程序名
+1. 编译某个程序时，执行make bin/program即可，makefile内有具体程序分类，分为使用snap库的程序，opencl程序，使用openmp的程序，使用cugraph的程序，需在对应类别上添加程序名才能进行编译指定编译
+2. cugraph相关安装使用conda进行管理，执行命令是conda create -n cugraph_env -c rapidsai -c conda-forge -c nvidia rapids=25.02 python=3.12 cuda-version=11.8,可参考[https://rapids.ai/#quick-start]链接安装
 
 ## 免责声明
 本项目引用的第三方库/代码的版权归属原作者所有。
