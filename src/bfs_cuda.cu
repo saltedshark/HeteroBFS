@@ -475,6 +475,9 @@ float BFSGraph(cudaDeviceProp &deviceProp, int no_of_nodes, int edge_list_size, 
     total_time += duration_t;
 
 
+    //事件销毁
+    cudaEventDestroy(tstart);
+    cudaEventDestroy(tstop);
     //clean device mem
     cudaFree(d_offsets);
 	cudaFree(d_edges);

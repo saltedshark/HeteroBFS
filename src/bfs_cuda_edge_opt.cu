@@ -30,6 +30,7 @@ using namespace std::chrono;
 #include "OptionParser.h"//for arguments parse
 #include "cudacommon.h" //for checkCudaErrors，assert
 #include <cfloat>//for FLT_MAX
+#include <algorithm>//for sort
 
 #include <thrust/sort.h>
 #include <thrust/execution_policy.h>
