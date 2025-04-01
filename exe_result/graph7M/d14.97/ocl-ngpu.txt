@@ -1,0 +1,960 @@
+kernelfilename is pn��
+Successfully initialized OpenCL context on:
+  Platform 3: NVIDIA CUDA
+  Device 0: NVIDIA GeForce RTX 3060 Laptop GPU
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 7000000
+边数: 104790000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 3
+▌ 平台名称: NVIDIA CUDA
+▌ 设备索引: 0
+▌ 设备名称: NVIDIA GeForce RTX 3060 Laptop GPU
+▌ 计算单元: 30
+▌ 编译选项: -cl-nv-verbose -cl-nv-opt-level=3
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.002249 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.385128
+transfer_time : 0.321760
+kernel_time : 0.044868
+graph_block : 3
+kernel_exe_times : 11
+Pass 1:
+Time record(seconds)
+total_time : 0.385198
+transfer_time : 0.321769
+kernel_time : 0.044853
+graph_block : 3
+kernel_exe_times : 11
+Pass 2:
+Time record(seconds)
+total_time : 0.375891
+transfer_time : 0.321792
+kernel_time : 0.044848
+graph_block : 3
+kernel_exe_times : 11
+Pass 3:
+Time record(seconds)
+total_time : 0.376127
+transfer_time : 0.321806
+kernel_time : 0.044882
+graph_block : 3
+kernel_exe_times : 11
+Pass 4:
+Time record(seconds)
+total_time : 0.376139
+transfer_time : 0.321796
+kernel_time : 0.044805
+graph_block : 3
+kernel_exe_times : 11
+Pass 5:
+Time record(seconds)
+total_time : 0.375953
+transfer_time : 0.321818
+kernel_time : 0.044804
+graph_block : 3
+kernel_exe_times : 11
+Pass 6:
+Time record(seconds)
+total_time : 0.376006
+transfer_time : 0.321859
+kernel_time : 0.044872
+graph_block : 3
+kernel_exe_times : 11
+Pass 7:
+Time record(seconds)
+total_time : 0.376035
+transfer_time : 0.321796
+kernel_time : 0.044884
+graph_block : 3
+kernel_exe_times : 11
+Pass 8:
+Time record(seconds)
+total_time : 0.376028
+transfer_time : 0.321802
+kernel_time : 0.044850
+graph_block : 3
+kernel_exe_times : 11
+Pass 9:
+Time record(seconds)
+total_time : 0.375931
+transfer_time : 0.321729
+kernel_time : 0.044771
+graph_block : 3
+kernel_exe_times : 11
+kernelfilename is 
+Successfully initialized OpenCL context on:
+  Platform 3: NVIDIA CUDA
+  Device 0: NVIDIA GeForce RTX 3060 Laptop GPU
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 7000000
+边数: 104790000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 3
+▌ 平台名称: NVIDIA CUDA
+▌ 设备索引: 0
+▌ 设备名称: NVIDIA GeForce RTX 3060 Laptop GPU
+▌ 计算单元: 30
+▌ 编译选项: -cl-nv-verbose -cl-nv-opt-level=3
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.002339 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.386869
+transfer_time : 0.322950
+kernel_time : 0.044971
+graph_block : 4
+kernel_exe_times : 12
+Pass 1:
+Time record(seconds)
+total_time : 0.386319
+transfer_time : 0.322829
+kernel_time : 0.044923
+graph_block : 4
+kernel_exe_times : 12
+Pass 2:
+Time record(seconds)
+total_time : 0.377357
+transfer_time : 0.322852
+kernel_time : 0.044842
+graph_block : 4
+kernel_exe_times : 12
+Pass 3:
+Time record(seconds)
+total_time : 0.377120
+transfer_time : 0.322753
+kernel_time : 0.044865
+graph_block : 4
+kernel_exe_times : 12
+Pass 4:
+Time record(seconds)
+total_time : 0.377100
+transfer_time : 0.322792
+kernel_time : 0.044918
+graph_block : 4
+kernel_exe_times : 12
+Pass 5:
+Time record(seconds)
+total_time : 0.377238
+transfer_time : 0.322820
+kernel_time : 0.044959
+graph_block : 4
+kernel_exe_times : 12
+Pass 6:
+Time record(seconds)
+total_time : 0.377280
+transfer_time : 0.322754
+kernel_time : 0.044853
+graph_block : 4
+kernel_exe_times : 12
+Pass 7:
+Time record(seconds)
+total_time : 0.377175
+transfer_time : 0.322862
+kernel_time : 0.044786
+graph_block : 4
+kernel_exe_times : 12
+Pass 8:
+Time record(seconds)
+total_time : 0.376938
+transfer_time : 0.322771
+kernel_time : 0.044645
+graph_block : 4
+kernel_exe_times : 12
+Pass 9:
+Time record(seconds)
+total_time : 0.376709
+transfer_time : 0.322767
+kernel_time : 0.044985
+graph_block : 4
+kernel_exe_times : 12
+kernelfilename is 
+Successfully initialized OpenCL context on:
+  Platform 3: NVIDIA CUDA
+  Device 0: NVIDIA GeForce RTX 3060 Laptop GPU
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 7000000
+边数: 104790000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 3
+▌ 平台名称: NVIDIA CUDA
+▌ 设备索引: 0
+▌ 设备名称: NVIDIA GeForce RTX 3060 Laptop GPU
+▌ 计算单元: 30
+▌ 编译选项: -cl-nv-verbose -cl-nv-opt-level=3
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.002356 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.381073
+transfer_time : 0.317589
+kernel_time : 0.044689
+graph_block : 1
+kernel_exe_times : 9
+Pass 1:
+Time record(seconds)
+total_time : 0.380989
+transfer_time : 0.317452
+kernel_time : 0.044646
+graph_block : 1
+kernel_exe_times : 9
+Pass 2:
+Time record(seconds)
+total_time : 0.372348
+transfer_time : 0.317460
+kernel_time : 0.044588
+graph_block : 1
+kernel_exe_times : 9
+Pass 3:
+Time record(seconds)
+total_time : 0.372532
+transfer_time : 0.317465
+kernel_time : 0.044685
+graph_block : 1
+kernel_exe_times : 9
+Pass 4:
+Time record(seconds)
+total_time : 0.372396
+transfer_time : 0.317458
+kernel_time : 0.044619
+graph_block : 1
+kernel_exe_times : 9
+Pass 5:
+Time record(seconds)
+total_time : 0.372402
+transfer_time : 0.317503
+kernel_time : 0.044618
+graph_block : 1
+kernel_exe_times : 9
+Pass 6:
+Time record(seconds)
+total_time : 0.372621
+transfer_time : 0.317469
+kernel_time : 0.044628
+graph_block : 1
+kernel_exe_times : 9
+Pass 7:
+Time record(seconds)
+total_time : 0.372989
+transfer_time : 0.317495
+kernel_time : 0.045149
+graph_block : 1
+kernel_exe_times : 9
+Pass 8:
+Time record(seconds)
+total_time : 0.374509
+transfer_time : 0.319148
+kernel_time : 0.044713
+graph_block : 1
+kernel_exe_times : 9
+Pass 9:
+Time record(seconds)
+total_time : 0.372851
+transfer_time : 0.317629
+kernel_time : 0.044684
+graph_block : 1
+kernel_exe_times : 9
+kernelfilename is 
+Successfully initialized OpenCL context on:
+  Platform 3: NVIDIA CUDA
+  Device 0: NVIDIA GeForce RTX 3060 Laptop GPU
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 7000000
+边数: 104790000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 3
+▌ 平台名称: NVIDIA CUDA
+▌ 设备索引: 0
+▌ 设备名称: NVIDIA GeForce RTX 3060 Laptop GPU
+▌ 计算单元: 30
+▌ 编译选项: -cl-nv-verbose -cl-nv-opt-level=3
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.002273 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.384535
+transfer_time : 0.321347
+kernel_time : 0.044552
+graph_block : 2
+kernel_exe_times : 10
+Pass 1:
+Time record(seconds)
+total_time : 0.384781
+transfer_time : 0.321247
+kernel_time : 0.044635
+graph_block : 2
+kernel_exe_times : 10
+Pass 2:
+Time record(seconds)
+total_time : 0.375242
+transfer_time : 0.321316
+kernel_time : 0.044602
+graph_block : 2
+kernel_exe_times : 10
+Pass 3:
+Time record(seconds)
+total_time : 0.375158
+transfer_time : 0.321322
+kernel_time : 0.044591
+graph_block : 2
+kernel_exe_times : 10
+Pass 4:
+Time record(seconds)
+total_time : 0.375156
+transfer_time : 0.321260
+kernel_time : 0.044685
+graph_block : 2
+kernel_exe_times : 10
+Pass 5:
+Time record(seconds)
+total_time : 0.375167
+transfer_time : 0.321282
+kernel_time : 0.044676
+graph_block : 2
+kernel_exe_times : 10
+Pass 6:
+Time record(seconds)
+total_time : 0.375254
+transfer_time : 0.321277
+kernel_time : 0.044671
+graph_block : 2
+kernel_exe_times : 10
+Pass 7:
+Time record(seconds)
+total_time : 0.375193
+transfer_time : 0.321278
+kernel_time : 0.044580
+graph_block : 2
+kernel_exe_times : 10
+Pass 8:
+Time record(seconds)
+total_time : 0.375099
+transfer_time : 0.321275
+kernel_time : 0.044512
+graph_block : 2
+kernel_exe_times : 10
+Pass 9:
+Time record(seconds)
+total_time : 0.375224
+transfer_time : 0.321317
+kernel_time : 0.044645
+graph_block : 2
+kernel_exe_times : 10
+kernelfilename is 
+Successfully initialized OpenCL context on:
+  Platform 3: NVIDIA CUDA
+  Device 0: NVIDIA GeForce RTX 3060 Laptop GPU
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 7000000
+边数: 104790000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 3
+▌ 平台名称: NVIDIA CUDA
+▌ 设备索引: 0
+▌ 设备名称: NVIDIA GeForce RTX 3060 Laptop GPU
+▌ 计算单元: 30
+▌ 编译选项: -cl-nv-verbose -cl-nv-opt-level=3
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.002374 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.385044
+transfer_time : 0.321278
+kernel_time : 0.044808
+graph_block : 2
+kernel_exe_times : 10
+Pass 1:
+Time record(seconds)
+total_time : 0.385574
+transfer_time : 0.321251
+kernel_time : 0.044757
+graph_block : 2
+kernel_exe_times : 10
+Pass 2:
+Time record(seconds)
+total_time : 0.375333
+transfer_time : 0.321275
+kernel_time : 0.044792
+graph_block : 2
+kernel_exe_times : 10
+Pass 3:
+Time record(seconds)
+total_time : 0.375406
+transfer_time : 0.321282
+kernel_time : 0.044865
+graph_block : 2
+kernel_exe_times : 10
+Pass 4:
+Time record(seconds)
+total_time : 0.375730
+transfer_time : 0.321275
+kernel_time : 0.044817
+graph_block : 2
+kernel_exe_times : 10
+Pass 5:
+Time record(seconds)
+total_time : 0.375435
+transfer_time : 0.321282
+kernel_time : 0.044753
+graph_block : 2
+kernel_exe_times : 10
+Pass 6:
+Time record(seconds)
+total_time : 0.375447
+transfer_time : 0.321277
+kernel_time : 0.044769
+graph_block : 2
+kernel_exe_times : 10
+Pass 7:
+Time record(seconds)
+total_time : 0.375404
+transfer_time : 0.321301
+kernel_time : 0.044844
+graph_block : 2
+kernel_exe_times : 10
+Pass 8:
+Time record(seconds)
+total_time : 0.375310
+transfer_time : 0.321294
+kernel_time : 0.044804
+graph_block : 2
+kernel_exe_times : 10
+Pass 9:
+Time record(seconds)
+total_time : 0.375648
+transfer_time : 0.321308
+kernel_time : 0.044839
+graph_block : 2
+kernel_exe_times : 10
+kernelfilename is 
+Successfully initialized OpenCL context on:
+  Platform 3: NVIDIA CUDA
+  Device 0: NVIDIA GeForce RTX 3060 Laptop GPU
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 7000000
+边数: 104790000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 3
+▌ 平台名称: NVIDIA CUDA
+▌ 设备索引: 0
+▌ 设备名称: NVIDIA GeForce RTX 3060 Laptop GPU
+▌ 计算单元: 30
+▌ 编译选项: -cl-nv-verbose -cl-nv-opt-level=3
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.002307 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.384433
+transfer_time : 0.321066
+kernel_time : 0.044819
+graph_block : 2
+kernel_exe_times : 10
+Pass 1:
+Time record(seconds)
+total_time : 0.384210
+transfer_time : 0.321169
+kernel_time : 0.044800
+graph_block : 2
+kernel_exe_times : 10
+Pass 2:
+Time record(seconds)
+total_time : 0.375097
+transfer_time : 0.321091
+kernel_time : 0.044828
+graph_block : 2
+kernel_exe_times : 10
+Pass 3:
+Time record(seconds)
+total_time : 0.375091
+transfer_time : 0.321084
+kernel_time : 0.044855
+graph_block : 2
+kernel_exe_times : 10
+Pass 4:
+Time record(seconds)
+total_time : 0.375524
+transfer_time : 0.321066
+kernel_time : 0.044939
+graph_block : 2
+kernel_exe_times : 10
+Pass 5:
+Time record(seconds)
+total_time : 0.375145
+transfer_time : 0.320987
+kernel_time : 0.044938
+graph_block : 2
+kernel_exe_times : 10
+Pass 6:
+Time record(seconds)
+total_time : 0.375276
+transfer_time : 0.321054
+kernel_time : 0.044902
+graph_block : 2
+kernel_exe_times : 10
+Pass 7:
+Time record(seconds)
+total_time : 0.375098
+transfer_time : 0.321008
+kernel_time : 0.044778
+graph_block : 2
+kernel_exe_times : 10
+Pass 8:
+Time record(seconds)
+total_time : 0.375157
+transfer_time : 0.321069
+kernel_time : 0.044857
+graph_block : 2
+kernel_exe_times : 10
+Pass 9:
+Time record(seconds)
+total_time : 0.376857
+transfer_time : 0.321161
+kernel_time : 0.046363
+graph_block : 2
+kernel_exe_times : 10
+kernelfilename is 
+Successfully initialized OpenCL context on:
+  Platform 3: NVIDIA CUDA
+  Device 0: NVIDIA GeForce RTX 3060 Laptop GPU
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 7000000
+边数: 104790000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 3
+▌ 平台名称: NVIDIA CUDA
+▌ 设备索引: 0
+▌ 设备名称: NVIDIA GeForce RTX 3060 Laptop GPU
+▌ 计算单元: 30
+▌ 编译选项: -cl-nv-verbose -cl-nv-opt-level=3
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.002270 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.383235
+transfer_time : 0.320182
+kernel_time : 0.044425
+graph_block : 3
+kernel_exe_times : 11
+Pass 1:
+Time record(seconds)
+total_time : 0.383004
+transfer_time : 0.320141
+kernel_time : 0.044302
+graph_block : 3
+kernel_exe_times : 11
+Pass 2:
+Time record(seconds)
+total_time : 0.373780
+transfer_time : 0.320106
+kernel_time : 0.044343
+graph_block : 3
+kernel_exe_times : 11
+Pass 3:
+Time record(seconds)
+total_time : 0.373721
+transfer_time : 0.320117
+kernel_time : 0.044424
+graph_block : 3
+kernel_exe_times : 11
+Pass 4:
+Time record(seconds)
+total_time : 0.373818
+transfer_time : 0.320132
+kernel_time : 0.044400
+graph_block : 3
+kernel_exe_times : 11
+Pass 5:
+Time record(seconds)
+total_time : 0.373886
+transfer_time : 0.320086
+kernel_time : 0.044405
+graph_block : 3
+kernel_exe_times : 11
+Pass 6:
+Time record(seconds)
+total_time : 0.373880
+transfer_time : 0.320029
+kernel_time : 0.044421
+graph_block : 3
+kernel_exe_times : 11
+Pass 7:
+Time record(seconds)
+total_time : 0.373833
+transfer_time : 0.320004
+kernel_time : 0.044415
+graph_block : 3
+kernel_exe_times : 11
+Pass 8:
+Time record(seconds)
+total_time : 0.373803
+transfer_time : 0.320052
+kernel_time : 0.044341
+graph_block : 3
+kernel_exe_times : 11
+Pass 9:
+Time record(seconds)
+total_time : 0.373856
+transfer_time : 0.320124
+kernel_time : 0.044299
+graph_block : 3
+kernel_exe_times : 11
+kernelfilename is 
+Successfully initialized OpenCL context on:
+  Platform 3: NVIDIA CUDA
+  Device 0: NVIDIA GeForce RTX 3060 Laptop GPU
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 7000000
+边数: 104790000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 3
+▌ 平台名称: NVIDIA CUDA
+▌ 设备索引: 0
+▌ 设备名称: NVIDIA GeForce RTX 3060 Laptop GPU
+▌ 计算单元: 30
+▌ 编译选项: -cl-nv-verbose -cl-nv-opt-level=3
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.002359 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.382859
+transfer_time : 0.319447
+kernel_time : 0.044810
+graph_block : 2
+kernel_exe_times : 10
+Pass 1:
+Time record(seconds)
+total_time : 0.382511
+transfer_time : 0.319448
+kernel_time : 0.044748
+graph_block : 2
+kernel_exe_times : 10
+Pass 2:
+Time record(seconds)
+total_time : 0.373422
+transfer_time : 0.319381
+kernel_time : 0.044718
+graph_block : 2
+kernel_exe_times : 10
+Pass 3:
+Time record(seconds)
+total_time : 0.373580
+transfer_time : 0.319438
+kernel_time : 0.044797
+graph_block : 2
+kernel_exe_times : 10
+Pass 4:
+Time record(seconds)
+total_time : 0.373431
+transfer_time : 0.319430
+kernel_time : 0.044784
+graph_block : 2
+kernel_exe_times : 10
+Pass 5:
+Time record(seconds)
+total_time : 0.373533
+transfer_time : 0.319410
+kernel_time : 0.044837
+graph_block : 2
+kernel_exe_times : 10
+Pass 6:
+Time record(seconds)
+total_time : 0.373530
+transfer_time : 0.319473
+kernel_time : 0.044822
+graph_block : 2
+kernel_exe_times : 10
+Pass 7:
+Time record(seconds)
+total_time : 0.373520
+transfer_time : 0.319372
+kernel_time : 0.044834
+graph_block : 2
+kernel_exe_times : 10
+Pass 8:
+Time record(seconds)
+total_time : 0.373487
+transfer_time : 0.319414
+kernel_time : 0.044784
+graph_block : 2
+kernel_exe_times : 10
+Pass 9:
+Time record(seconds)
+total_time : 0.373460
+transfer_time : 0.319529
+kernel_time : 0.044717
+graph_block : 2
+kernel_exe_times : 10
+kernelfilename is 
+Successfully initialized OpenCL context on:
+  Platform 3: NVIDIA CUDA
+  Device 0: NVIDIA GeForce RTX 3060 Laptop GPU
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 7000000
+边数: 104790000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 3
+▌ 平台名称: NVIDIA CUDA
+▌ 设备索引: 0
+▌ 设备名称: NVIDIA GeForce RTX 3060 Laptop GPU
+▌ 计算单元: 30
+▌ 编译选项: -cl-nv-verbose -cl-nv-opt-level=3
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.002359 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.384270
+transfer_time : 0.320854
+kernel_time : 0.044507
+graph_block : 3
+kernel_exe_times : 11
+Pass 1:
+Time record(seconds)
+total_time : 0.384239
+transfer_time : 0.320742
+kernel_time : 0.044452
+graph_block : 3
+kernel_exe_times : 11
+Pass 2:
+Time record(seconds)
+total_time : 0.374681
+transfer_time : 0.320784
+kernel_time : 0.044475
+graph_block : 3
+kernel_exe_times : 11
+Pass 3:
+Time record(seconds)
+total_time : 0.374478
+transfer_time : 0.320765
+kernel_time : 0.044537
+graph_block : 3
+kernel_exe_times : 11
+Pass 4:
+Time record(seconds)
+total_time : 0.374696
+transfer_time : 0.320789
+kernel_time : 0.044515
+graph_block : 3
+kernel_exe_times : 11
+Pass 5:
+Time record(seconds)
+total_time : 0.374872
+transfer_time : 0.320793
+kernel_time : 0.044542
+graph_block : 3
+kernel_exe_times : 11
+Pass 6:
+Time record(seconds)
+total_time : 0.374797
+transfer_time : 0.320852
+kernel_time : 0.044497
+graph_block : 3
+kernel_exe_times : 11
+Pass 7:
+Time record(seconds)
+total_time : 0.374738
+transfer_time : 0.320741
+kernel_time : 0.044483
+graph_block : 3
+kernel_exe_times : 11
+Pass 8:
+Time record(seconds)
+total_time : 0.375141
+transfer_time : 0.320771
+kernel_time : 0.044551
+graph_block : 3
+kernel_exe_times : 11
+Pass 9:
+Time record(seconds)
+total_time : 0.374681
+transfer_time : 0.320853
+kernel_time : 0.044537
+graph_block : 3
+kernel_exe_times : 11
+kernelfilename is 
+Successfully initialized OpenCL context on:
+  Platform 3: NVIDIA CUDA
+  Device 0: NVIDIA GeForce RTX 3060 Laptop GPU
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 7000000
+边数: 104790000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 3
+▌ 平台名称: NVIDIA CUDA
+▌ 设备索引: 0
+▌ 设备名称: NVIDIA GeForce RTX 3060 Laptop GPU
+▌ 计算单元: 30
+▌ 编译选项: -cl-nv-verbose -cl-nv-opt-level=3
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.002249 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.387760
+transfer_time : 0.323202
+kernel_time : 0.045375
+graph_block : 4
+kernel_exe_times : 12
+Pass 1:
+Time record(seconds)
+total_time : 0.387876
+transfer_time : 0.323152
+kernel_time : 0.045388
+graph_block : 4
+kernel_exe_times : 12
+Pass 2:
+Time record(seconds)
+total_time : 0.379121
+transfer_time : 0.323147
+kernel_time : 0.045271
+graph_block : 4
+kernel_exe_times : 12
+Pass 3:
+Time record(seconds)
+total_time : 0.378981
+transfer_time : 0.323160
+kernel_time : 0.045346
+graph_block : 4
+kernel_exe_times : 12
+Pass 4:
+Time record(seconds)
+total_time : 0.379042
+transfer_time : 0.323162
+kernel_time : 0.045451
+graph_block : 4
+kernel_exe_times : 12
+Pass 5:
+Time record(seconds)
+total_time : 0.379189
+transfer_time : 0.323174
+kernel_time : 0.045322
+graph_block : 4
+kernel_exe_times : 12
+Pass 6:
+Time record(seconds)
+total_time : 0.379109
+transfer_time : 0.323168
+kernel_time : 0.045315
+graph_block : 4
+kernel_exe_times : 12
+Pass 7:
+Time record(seconds)
+total_time : 0.378905
+transfer_time : 0.323167
+kernel_time : 0.045355
+graph_block : 4
+kernel_exe_times : 12
+Pass 8:
+Time record(seconds)
+total_time : 0.379204
+transfer_time : 0.323227
+kernel_time : 0.045263
+graph_block : 4
+kernel_exe_times : 12
+Pass 9:
+Time record(seconds)
+total_time : 0.379027
+transfer_time : 0.323192
+kernel_time : 0.045321
+graph_block : 4
+kernel_exe_times : 12

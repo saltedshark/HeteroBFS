@@ -1,0 +1,960 @@
+kernelfilename is p.��W
+Successfully initialized OpenCL context on:
+  Platform 1: Intel(R) OpenCL
+  Device 0: 12th Gen Intel(R) Core(TM) i7-12700H
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 10000000
+边数: 153100000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 1
+▌ 平台名称: Intel(R) OpenCL
+▌ 设备索引: 0
+▌ 设备名称: 12th Gen Intel(R) Core(TM) i7-12700H
+▌ 计算单元: 20
+▌ 编译选项: -cl-mad-enable -cl-no-signed-zeros
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.074386 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.377058
+transfer_time : 0.054600
+kernel_time : 0.295426
+graph_block : 2
+kernel_exe_times : 10
+Pass 1:
+Time record(seconds)
+total_time : 0.380056
+transfer_time : 0.053890
+kernel_time : 0.299959
+graph_block : 2
+kernel_exe_times : 10
+Pass 2:
+Time record(seconds)
+total_time : 0.383000
+transfer_time : 0.054476
+kernel_time : 0.301519
+graph_block : 2
+kernel_exe_times : 10
+Pass 3:
+Time record(seconds)
+total_time : 0.382605
+transfer_time : 0.054502
+kernel_time : 0.299129
+graph_block : 2
+kernel_exe_times : 10
+Pass 4:
+Time record(seconds)
+total_time : 0.386192
+transfer_time : 0.054502
+kernel_time : 0.302026
+graph_block : 2
+kernel_exe_times : 10
+Pass 5:
+Time record(seconds)
+total_time : 0.385380
+transfer_time : 0.054654
+kernel_time : 0.304649
+graph_block : 2
+kernel_exe_times : 10
+Pass 6:
+Time record(seconds)
+total_time : 0.381907
+transfer_time : 0.054525
+kernel_time : 0.300861
+graph_block : 2
+kernel_exe_times : 10
+Pass 7:
+Time record(seconds)
+total_time : 0.382581
+transfer_time : 0.054143
+kernel_time : 0.301334
+graph_block : 2
+kernel_exe_times : 10
+Pass 8:
+Time record(seconds)
+total_time : 0.382224
+transfer_time : 0.053991
+kernel_time : 0.300303
+graph_block : 2
+kernel_exe_times : 10
+Pass 9:
+Time record(seconds)
+total_time : 0.388524
+transfer_time : 0.054384
+kernel_time : 0.307184
+graph_block : 2
+kernel_exe_times : 10
+kernelfilename is p��"�Z
+Successfully initialized OpenCL context on:
+  Platform 1: Intel(R) OpenCL
+  Device 0: 12th Gen Intel(R) Core(TM) i7-12700H
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 10000000
+边数: 153100000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 1
+▌ 平台名称: Intel(R) OpenCL
+▌ 设备索引: 0
+▌ 设备名称: 12th Gen Intel(R) Core(TM) i7-12700H
+▌ 计算单元: 20
+▌ 编译选项: -cl-mad-enable -cl-no-signed-zeros
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.074194 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.407825
+transfer_time : 0.054544
+kernel_time : 0.327244
+graph_block : 3
+kernel_exe_times : 11
+Pass 1:
+Time record(seconds)
+total_time : 0.407930
+transfer_time : 0.054211
+kernel_time : 0.327698
+graph_block : 3
+kernel_exe_times : 11
+Pass 2:
+Time record(seconds)
+total_time : 0.413756
+transfer_time : 0.054221
+kernel_time : 0.332779
+graph_block : 3
+kernel_exe_times : 11
+Pass 3:
+Time record(seconds)
+total_time : 0.416928
+transfer_time : 0.054570
+kernel_time : 0.335431
+graph_block : 3
+kernel_exe_times : 11
+Pass 4:
+Time record(seconds)
+total_time : 0.415551
+transfer_time : 0.054345
+kernel_time : 0.331130
+graph_block : 3
+kernel_exe_times : 11
+Pass 5:
+Time record(seconds)
+total_time : 0.408845
+transfer_time : 0.054301
+kernel_time : 0.327526
+graph_block : 3
+kernel_exe_times : 11
+Pass 6:
+Time record(seconds)
+total_time : 0.412698
+transfer_time : 0.054488
+kernel_time : 0.330994
+graph_block : 3
+kernel_exe_times : 11
+Pass 7:
+Time record(seconds)
+total_time : 0.411511
+transfer_time : 0.054504
+kernel_time : 0.330350
+graph_block : 3
+kernel_exe_times : 11
+Pass 8:
+Time record(seconds)
+total_time : 0.409049
+transfer_time : 0.054091
+kernel_time : 0.327557
+graph_block : 3
+kernel_exe_times : 11
+Pass 9:
+Time record(seconds)
+total_time : 0.411081
+transfer_time : 0.054413
+kernel_time : 0.329611
+graph_block : 3
+kernel_exe_times : 11
+kernelfilename is pNi#^
+Successfully initialized OpenCL context on:
+  Platform 1: Intel(R) OpenCL
+  Device 0: 12th Gen Intel(R) Core(TM) i7-12700H
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 10000000
+边数: 153100000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 1
+▌ 平台名称: Intel(R) OpenCL
+▌ 设备索引: 0
+▌ 设备名称: 12th Gen Intel(R) Core(TM) i7-12700H
+▌ 计算单元: 20
+▌ 编译选项: -cl-mad-enable -cl-no-signed-zeros
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.078861 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.406811
+transfer_time : 0.054357
+kernel_time : 0.325789
+graph_block : 2
+kernel_exe_times : 10
+Pass 1:
+Time record(seconds)
+total_time : 0.403845
+transfer_time : 0.054185
+kernel_time : 0.322893
+graph_block : 2
+kernel_exe_times : 10
+Pass 2:
+Time record(seconds)
+total_time : 0.415535
+transfer_time : 0.054778
+kernel_time : 0.332805
+graph_block : 2
+kernel_exe_times : 10
+Pass 3:
+Time record(seconds)
+total_time : 0.408856
+transfer_time : 0.054059
+kernel_time : 0.328101
+graph_block : 2
+kernel_exe_times : 10
+Pass 4:
+Time record(seconds)
+total_time : 0.411720
+transfer_time : 0.057050
+kernel_time : 0.328082
+graph_block : 2
+kernel_exe_times : 10
+Pass 5:
+Time record(seconds)
+total_time : 0.412918
+transfer_time : 0.053946
+kernel_time : 0.330990
+graph_block : 2
+kernel_exe_times : 10
+Pass 6:
+Time record(seconds)
+total_time : 0.414005
+transfer_time : 0.053994
+kernel_time : 0.331322
+graph_block : 2
+kernel_exe_times : 10
+Pass 7:
+Time record(seconds)
+total_time : 0.410330
+transfer_time : 0.054268
+kernel_time : 0.329251
+graph_block : 2
+kernel_exe_times : 10
+Pass 8:
+Time record(seconds)
+total_time : 0.410490
+transfer_time : 0.054282
+kernel_time : 0.328653
+graph_block : 2
+kernel_exe_times : 10
+Pass 9:
+Time record(seconds)
+total_time : 0.410326
+transfer_time : 0.053932
+kernel_time : 0.328491
+graph_block : 2
+kernel_exe_times : 10
+kernelfilename is p.��Q]
+Successfully initialized OpenCL context on:
+  Platform 1: Intel(R) OpenCL
+  Device 0: 12th Gen Intel(R) Core(TM) i7-12700H
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 10000000
+边数: 153100000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 1
+▌ 平台名称: Intel(R) OpenCL
+▌ 设备索引: 0
+▌ 设备名称: 12th Gen Intel(R) Core(TM) i7-12700H
+▌ 计算单元: 20
+▌ 编译选项: -cl-mad-enable -cl-no-signed-zeros
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.079680 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.404481
+transfer_time : 0.054377
+kernel_time : 0.323725
+graph_block : 2
+kernel_exe_times : 10
+Pass 1:
+Time record(seconds)
+total_time : 0.406595
+transfer_time : 0.053893
+kernel_time : 0.325955
+graph_block : 2
+kernel_exe_times : 10
+Pass 2:
+Time record(seconds)
+total_time : 0.406247
+transfer_time : 0.053827
+kernel_time : 0.323697
+graph_block : 2
+kernel_exe_times : 10
+Pass 3:
+Time record(seconds)
+total_time : 0.406063
+transfer_time : 0.054037
+kernel_time : 0.325435
+graph_block : 2
+kernel_exe_times : 10
+Pass 4:
+Time record(seconds)
+total_time : 0.406580
+transfer_time : 0.054552
+kernel_time : 0.325000
+graph_block : 2
+kernel_exe_times : 10
+Pass 5:
+Time record(seconds)
+total_time : 0.406572
+transfer_time : 0.053617
+kernel_time : 0.325811
+graph_block : 2
+kernel_exe_times : 10
+Pass 6:
+Time record(seconds)
+total_time : 0.404635
+transfer_time : 0.053981
+kernel_time : 0.324005
+graph_block : 2
+kernel_exe_times : 10
+Pass 7:
+Time record(seconds)
+total_time : 0.406761
+transfer_time : 0.053862
+kernel_time : 0.324950
+graph_block : 2
+kernel_exe_times : 10
+Pass 8:
+Time record(seconds)
+total_time : 0.405577
+transfer_time : 0.054266
+kernel_time : 0.324539
+graph_block : 2
+kernel_exe_times : 10
+Pass 9:
+Time record(seconds)
+total_time : 0.406358
+transfer_time : 0.054545
+kernel_time : 0.324285
+graph_block : 2
+kernel_exe_times : 10
+kernelfilename is p�dU\
+Successfully initialized OpenCL context on:
+  Platform 1: Intel(R) OpenCL
+  Device 0: 12th Gen Intel(R) Core(TM) i7-12700H
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 10000000
+边数: 153100000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 1
+▌ 平台名称: Intel(R) OpenCL
+▌ 设备索引: 0
+▌ 设备名称: 12th Gen Intel(R) Core(TM) i7-12700H
+▌ 计算单元: 20
+▌ 编译选项: -cl-mad-enable -cl-no-signed-zeros
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.075368 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.413868
+transfer_time : 0.054575
+kernel_time : 0.332394
+graph_block : 4
+kernel_exe_times : 12
+Pass 1:
+Time record(seconds)
+total_time : 0.408626
+transfer_time : 0.054447
+kernel_time : 0.325655
+graph_block : 4
+kernel_exe_times : 12
+Pass 2:
+Time record(seconds)
+total_time : 0.412830
+transfer_time : 0.054486
+kernel_time : 0.331426
+graph_block : 4
+kernel_exe_times : 12
+Pass 3:
+Time record(seconds)
+total_time : 0.411557
+transfer_time : 0.054464
+kernel_time : 0.330671
+graph_block : 4
+kernel_exe_times : 12
+Pass 4:
+Time record(seconds)
+total_time : 0.415460
+transfer_time : 0.055032
+kernel_time : 0.331396
+graph_block : 4
+kernel_exe_times : 12
+Pass 5:
+Time record(seconds)
+total_time : 0.412225
+transfer_time : 0.054278
+kernel_time : 0.331140
+graph_block : 4
+kernel_exe_times : 12
+Pass 6:
+Time record(seconds)
+total_time : 0.416419
+transfer_time : 0.054213
+kernel_time : 0.335370
+graph_block : 4
+kernel_exe_times : 12
+Pass 7:
+Time record(seconds)
+total_time : 0.415209
+transfer_time : 0.054351
+kernel_time : 0.333425
+graph_block : 4
+kernel_exe_times : 12
+Pass 8:
+Time record(seconds)
+total_time : 0.412925
+transfer_time : 0.054329
+kernel_time : 0.331534
+graph_block : 4
+kernel_exe_times : 12
+Pass 9:
+Time record(seconds)
+total_time : 0.413169
+transfer_time : 0.054732
+kernel_time : 0.331308
+graph_block : 4
+kernel_exe_times : 12
+kernelfilename is p^#�YW
+Successfully initialized OpenCL context on:
+  Platform 1: Intel(R) OpenCL
+  Device 0: 12th Gen Intel(R) Core(TM) i7-12700H
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 10000000
+边数: 153100000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 1
+▌ 平台名称: Intel(R) OpenCL
+▌ 设备索引: 0
+▌ 设备名称: 12th Gen Intel(R) Core(TM) i7-12700H
+▌ 计算单元: 20
+▌ 编译选项: -cl-mad-enable -cl-no-signed-zeros
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.079745 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.407797
+transfer_time : 0.053944
+kernel_time : 0.327281
+graph_block : 1
+kernel_exe_times : 9
+Pass 1:
+Time record(seconds)
+total_time : 0.411641
+transfer_time : 0.053404
+kernel_time : 0.330391
+graph_block : 1
+kernel_exe_times : 9
+Pass 2:
+Time record(seconds)
+total_time : 0.408951
+transfer_time : 0.053354
+kernel_time : 0.328979
+graph_block : 1
+kernel_exe_times : 9
+Pass 3:
+Time record(seconds)
+total_time : 0.406120
+transfer_time : 0.053544
+kernel_time : 0.326386
+graph_block : 1
+kernel_exe_times : 9
+Pass 4:
+Time record(seconds)
+total_time : 0.410653
+transfer_time : 0.054104
+kernel_time : 0.329083
+graph_block : 1
+kernel_exe_times : 9
+Pass 5:
+Time record(seconds)
+total_time : 0.408135
+transfer_time : 0.053459
+kernel_time : 0.328240
+graph_block : 1
+kernel_exe_times : 9
+Pass 6:
+Time record(seconds)
+total_time : 0.412683
+transfer_time : 0.053485
+kernel_time : 0.333158
+graph_block : 1
+kernel_exe_times : 9
+Pass 7:
+Time record(seconds)
+total_time : 0.407172
+transfer_time : 0.053422
+kernel_time : 0.327113
+graph_block : 1
+kernel_exe_times : 9
+Pass 8:
+Time record(seconds)
+total_time : 0.406386
+transfer_time : 0.053354
+kernel_time : 0.326549
+graph_block : 1
+kernel_exe_times : 9
+Pass 9:
+Time record(seconds)
+total_time : 0.409801
+transfer_time : 0.053520
+kernel_time : 0.329499
+graph_block : 1
+kernel_exe_times : 9
+kernelfilename is p>��g[
+Successfully initialized OpenCL context on:
+  Platform 1: Intel(R) OpenCL
+  Device 0: 12th Gen Intel(R) Core(TM) i7-12700H
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 10000000
+边数: 153100000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 1
+▌ 平台名称: Intel(R) OpenCL
+▌ 设备索引: 0
+▌ 设备名称: 12th Gen Intel(R) Core(TM) i7-12700H
+▌ 计算单元: 20
+▌ 编译选项: -cl-mad-enable -cl-no-signed-zeros
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.075133 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.405181
+transfer_time : 0.053904
+kernel_time : 0.325543
+graph_block : 2
+kernel_exe_times : 10
+Pass 1:
+Time record(seconds)
+total_time : 0.404167
+transfer_time : 0.054092
+kernel_time : 0.323568
+graph_block : 2
+kernel_exe_times : 10
+Pass 2:
+Time record(seconds)
+total_time : 0.408572
+transfer_time : 0.053787
+kernel_time : 0.327756
+graph_block : 2
+kernel_exe_times : 10
+Pass 3:
+Time record(seconds)
+total_time : 0.405253
+transfer_time : 0.053941
+kernel_time : 0.323643
+graph_block : 2
+kernel_exe_times : 10
+Pass 4:
+Time record(seconds)
+total_time : 0.406952
+transfer_time : 0.053715
+kernel_time : 0.325867
+graph_block : 2
+kernel_exe_times : 10
+Pass 5:
+Time record(seconds)
+total_time : 0.404876
+transfer_time : 0.053991
+kernel_time : 0.323706
+graph_block : 2
+kernel_exe_times : 10
+Pass 6:
+Time record(seconds)
+total_time : 0.404626
+transfer_time : 0.054075
+kernel_time : 0.323724
+graph_block : 2
+kernel_exe_times : 10
+Pass 7:
+Time record(seconds)
+total_time : 0.422277
+transfer_time : 0.054834
+kernel_time : 0.340322
+graph_block : 2
+kernel_exe_times : 10
+Pass 8:
+Time record(seconds)
+total_time : 0.406424
+transfer_time : 0.054238
+kernel_time : 0.324717
+graph_block : 2
+kernel_exe_times : 10
+Pass 9:
+Time record(seconds)
+total_time : 0.409730
+transfer_time : 0.054686
+kernel_time : 0.327411
+graph_block : 2
+kernel_exe_times : 10
+kernelfilename is p>���W
+Successfully initialized OpenCL context on:
+  Platform 1: Intel(R) OpenCL
+  Device 0: 12th Gen Intel(R) Core(TM) i7-12700H
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 10000000
+边数: 153100000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 1
+▌ 平台名称: Intel(R) OpenCL
+▌ 设备索引: 0
+▌ 设备名称: 12th Gen Intel(R) Core(TM) i7-12700H
+▌ 计算单元: 20
+▌ 编译选项: -cl-mad-enable -cl-no-signed-zeros
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.080297 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.405822
+transfer_time : 0.054551
+kernel_time : 0.324583
+graph_block : 3
+kernel_exe_times : 11
+Pass 1:
+Time record(seconds)
+total_time : 0.405923
+transfer_time : 0.054154
+kernel_time : 0.324651
+graph_block : 3
+kernel_exe_times : 11
+Pass 2:
+Time record(seconds)
+total_time : 0.408023
+transfer_time : 0.054358
+kernel_time : 0.327487
+graph_block : 3
+kernel_exe_times : 11
+Pass 3:
+Time record(seconds)
+total_time : 0.407693
+transfer_time : 0.054802
+kernel_time : 0.326056
+graph_block : 3
+kernel_exe_times : 11
+Pass 4:
+Time record(seconds)
+total_time : 0.411074
+transfer_time : 0.054286
+kernel_time : 0.330217
+graph_block : 3
+kernel_exe_times : 11
+Pass 5:
+Time record(seconds)
+total_time : 0.407168
+transfer_time : 0.054610
+kernel_time : 0.324946
+graph_block : 3
+kernel_exe_times : 11
+Pass 6:
+Time record(seconds)
+total_time : 0.407453
+transfer_time : 0.054712
+kernel_time : 0.325958
+graph_block : 3
+kernel_exe_times : 11
+Pass 7:
+Time record(seconds)
+total_time : 0.409495
+transfer_time : 0.054334
+kernel_time : 0.327142
+graph_block : 3
+kernel_exe_times : 11
+Pass 8:
+Time record(seconds)
+total_time : 0.408551
+transfer_time : 0.054294
+kernel_time : 0.327207
+graph_block : 3
+kernel_exe_times : 11
+Pass 9:
+Time record(seconds)
+total_time : 0.407391
+transfer_time : 0.054360
+kernel_time : 0.325237
+graph_block : 3
+kernel_exe_times : 11
+kernelfilename is p
+Successfully initialized OpenCL context on:
+  Platform 1: Intel(R) OpenCL
+  Device 0: 12th Gen Intel(R) Core(TM) i7-12700H
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 10000000
+边数: 153100000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 1
+▌ 平台名称: Intel(R) OpenCL
+▌ 设备索引: 0
+▌ 设备名称: 12th Gen Intel(R) Core(TM) i7-12700H
+▌ 计算单元: 20
+▌ 编译选项: -cl-mad-enable -cl-no-signed-zeros
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.078972 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.408424
+transfer_time : 0.054300
+kernel_time : 0.326985
+graph_block : 1
+kernel_exe_times : 9
+Pass 1:
+Time record(seconds)
+total_time : 0.409628
+transfer_time : 0.053764
+kernel_time : 0.329800
+graph_block : 1
+kernel_exe_times : 9
+Pass 2:
+Time record(seconds)
+total_time : 0.410026
+transfer_time : 0.053488
+kernel_time : 0.329518
+graph_block : 1
+kernel_exe_times : 9
+Pass 3:
+Time record(seconds)
+total_time : 0.411885
+transfer_time : 0.053654
+kernel_time : 0.329564
+graph_block : 1
+kernel_exe_times : 9
+Pass 4:
+Time record(seconds)
+total_time : 0.407216
+transfer_time : 0.053475
+kernel_time : 0.327307
+graph_block : 1
+kernel_exe_times : 9
+Pass 5:
+Time record(seconds)
+total_time : 0.408482
+transfer_time : 0.053563
+kernel_time : 0.328704
+graph_block : 1
+kernel_exe_times : 9
+Pass 6:
+Time record(seconds)
+total_time : 0.412808
+transfer_time : 0.053537
+kernel_time : 0.332701
+graph_block : 1
+kernel_exe_times : 9
+Pass 7:
+Time record(seconds)
+total_time : 0.407036
+transfer_time : 0.053579
+kernel_time : 0.327127
+graph_block : 1
+kernel_exe_times : 9
+Pass 8:
+Time record(seconds)
+total_time : 0.407367
+transfer_time : 0.053648
+kernel_time : 0.327856
+graph_block : 1
+kernel_exe_times : 9
+Pass 9:
+Time record(seconds)
+total_time : 0.412864
+transfer_time : 0.053491
+kernel_time : 0.332001
+graph_block : 1
+kernel_exe_times : 9
+kernelfilename is p~۟`
+Successfully initialized OpenCL context on:
+  Platform 1: Intel(R) OpenCL
+  Device 0: 12th Gen Intel(R) Core(TM) i7-12700H
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 10000000
+边数: 153100000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 1
+▌ 平台名称: Intel(R) OpenCL
+▌ 设备索引: 0
+▌ 设备名称: 12th Gen Intel(R) Core(TM) i7-12700H
+▌ 计算单元: 20
+▌ 编译选项: -cl-mad-enable -cl-no-signed-zeros
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.075118 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.401596
+transfer_time : 0.054185
+kernel_time : 0.321157
+graph_block : 1
+kernel_exe_times : 9
+Pass 1:
+Time record(seconds)
+total_time : 0.407587
+transfer_time : 0.053539
+kernel_time : 0.326772
+graph_block : 1
+kernel_exe_times : 9
+Pass 2:
+Time record(seconds)
+total_time : 0.407175
+transfer_time : 0.053432
+kernel_time : 0.327652
+graph_block : 1
+kernel_exe_times : 9
+Pass 3:
+Time record(seconds)
+total_time : 0.407652
+transfer_time : 0.053549
+kernel_time : 0.327952
+graph_block : 1
+kernel_exe_times : 9
+Pass 4:
+Time record(seconds)
+total_time : 0.408902
+transfer_time : 0.053947
+kernel_time : 0.325818
+graph_block : 1
+kernel_exe_times : 9
+Pass 5:
+Time record(seconds)
+total_time : 0.403536
+transfer_time : 0.053405
+kernel_time : 0.324295
+graph_block : 1
+kernel_exe_times : 9
+Pass 6:
+Time record(seconds)
+total_time : 0.408624
+transfer_time : 0.053490
+kernel_time : 0.328353
+graph_block : 1
+kernel_exe_times : 9
+Pass 7:
+Time record(seconds)
+total_time : 0.409712
+transfer_time : 0.053712
+kernel_time : 0.329234
+graph_block : 1
+kernel_exe_times : 9
+Pass 8:
+Time record(seconds)
+total_time : 0.408924
+transfer_time : 0.053672
+kernel_time : 0.328320
+graph_block : 1
+kernel_exe_times : 9
+Pass 9:
+Time record(seconds)
+total_time : 0.411721
+transfer_time : 0.053457
+kernel_time : 0.330404
+graph_block : 1
+kernel_exe_times : 9

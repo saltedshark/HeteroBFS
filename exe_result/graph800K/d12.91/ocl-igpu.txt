@@ -1,0 +1,960 @@
+kernelfilename is pn�#d
+Successfully initialized OpenCL context on:
+  Platform 2: Intel(R) OpenCL HD Graphics
+  Device 0: Intel(R) Graphics [0x46a6]
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 800000
+边数: 10328000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 2
+▌ 平台名称: Intel(R) OpenCL HD Graphics
+▌ 设备索引: 0
+▌ 设备名称: Intel(R) Graphics [0x46a6]
+▌ 计算单元: 96
+▌ 编译选项: -cl-single-precision-constant
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.144594 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.022660
+transfer_time : 0.006207
+kernel_time : 0.006884
+graph_block : 2
+kernel_exe_times : 9
+Pass 1:
+Time record(seconds)
+total_time : 0.020201
+transfer_time : 0.006205
+kernel_time : 0.006664
+graph_block : 2
+kernel_exe_times : 9
+Pass 2:
+Time record(seconds)
+total_time : 0.020110
+transfer_time : 0.006051
+kernel_time : 0.007320
+graph_block : 2
+kernel_exe_times : 9
+Pass 3:
+Time record(seconds)
+total_time : 0.018945
+transfer_time : 0.006206
+kernel_time : 0.005872
+graph_block : 2
+kernel_exe_times : 9
+Pass 4:
+Time record(seconds)
+total_time : 0.020368
+transfer_time : 0.006054
+kernel_time : 0.007694
+graph_block : 2
+kernel_exe_times : 9
+Pass 5:
+Time record(seconds)
+total_time : 0.018574
+transfer_time : 0.006084
+kernel_time : 0.005724
+graph_block : 2
+kernel_exe_times : 9
+Pass 6:
+Time record(seconds)
+total_time : 0.020251
+transfer_time : 0.006122
+kernel_time : 0.007135
+graph_block : 2
+kernel_exe_times : 9
+Pass 7:
+Time record(seconds)
+total_time : 0.019532
+transfer_time : 0.006009
+kernel_time : 0.006923
+graph_block : 2
+kernel_exe_times : 9
+Pass 8:
+Time record(seconds)
+total_time : 0.019455
+transfer_time : 0.006058
+kernel_time : 0.006816
+graph_block : 2
+kernel_exe_times : 9
+Pass 9:
+Time record(seconds)
+total_time : 0.019477
+transfer_time : 0.006085
+kernel_time : 0.006859
+graph_block : 2
+kernel_exe_times : 9
+kernelfilename is pC�>c
+Successfully initialized OpenCL context on:
+  Platform 2: Intel(R) OpenCL HD Graphics
+  Device 0: Intel(R) Graphics [0x46a6]
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 800000
+边数: 10328000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 2
+▌ 平台名称: Intel(R) OpenCL HD Graphics
+▌ 设备索引: 0
+▌ 设备名称: Intel(R) Graphics [0x46a6]
+▌ 计算单元: 96
+▌ 编译选项: -cl-single-precision-constant
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.150230 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.022596
+transfer_time : 0.006454
+kernel_time : 0.005981
+graph_block : 4
+kernel_exe_times : 12
+Pass 1:
+Time record(seconds)
+total_time : 0.019648
+transfer_time : 0.006173
+kernel_time : 0.005996
+graph_block : 4
+kernel_exe_times : 12
+Pass 2:
+Time record(seconds)
+total_time : 0.019919
+transfer_time : 0.006092
+kernel_time : 0.006530
+graph_block : 4
+kernel_exe_times : 12
+Pass 3:
+Time record(seconds)
+total_time : 0.019289
+transfer_time : 0.006088
+kernel_time : 0.006061
+graph_block : 4
+kernel_exe_times : 12
+Pass 4:
+Time record(seconds)
+total_time : 0.019338
+transfer_time : 0.006137
+kernel_time : 0.006225
+graph_block : 4
+kernel_exe_times : 12
+Pass 5:
+Time record(seconds)
+total_time : 0.019272
+transfer_time : 0.006182
+kernel_time : 0.006092
+graph_block : 4
+kernel_exe_times : 12
+Pass 6:
+Time record(seconds)
+total_time : 0.019891
+transfer_time : 0.006119
+kernel_time : 0.006617
+graph_block : 4
+kernel_exe_times : 12
+Pass 7:
+Time record(seconds)
+total_time : 0.019179
+transfer_time : 0.006197
+kernel_time : 0.005934
+graph_block : 4
+kernel_exe_times : 12
+Pass 8:
+Time record(seconds)
+total_time : 0.018813
+transfer_time : 0.006173
+kernel_time : 0.005776
+graph_block : 4
+kernel_exe_times : 12
+Pass 9:
+Time record(seconds)
+total_time : 0.018768
+transfer_time : 0.006148
+kernel_time : 0.005772
+graph_block : 4
+kernel_exe_times : 12
+kernelfilename is p.�Z
+Successfully initialized OpenCL context on:
+  Platform 2: Intel(R) OpenCL HD Graphics
+  Device 0: Intel(R) Graphics [0x46a6]
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 800000
+边数: 10328000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 2
+▌ 平台名称: Intel(R) OpenCL HD Graphics
+▌ 设备索引: 0
+▌ 设备名称: Intel(R) Graphics [0x46a6]
+▌ 计算单元: 96
+▌ 编译选项: -cl-single-precision-constant
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.141796 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.023406
+transfer_time : 0.006122
+kernel_time : 0.007824
+graph_block : 2
+kernel_exe_times : 9
+Pass 1:
+Time record(seconds)
+total_time : 0.021072
+transfer_time : 0.005974
+kernel_time : 0.007743
+graph_block : 2
+kernel_exe_times : 9
+Pass 2:
+Time record(seconds)
+total_time : 0.022036
+transfer_time : 0.006005
+kernel_time : 0.008418
+graph_block : 2
+kernel_exe_times : 9
+Pass 3:
+Time record(seconds)
+total_time : 0.020308
+transfer_time : 0.005983
+kernel_time : 0.007335
+graph_block : 2
+kernel_exe_times : 9
+Pass 4:
+Time record(seconds)
+total_time : 0.020451
+transfer_time : 0.006311
+kernel_time : 0.006978
+graph_block : 2
+kernel_exe_times : 9
+Pass 5:
+Time record(seconds)
+total_time : 0.019880
+transfer_time : 0.006115
+kernel_time : 0.006893
+graph_block : 2
+kernel_exe_times : 9
+Pass 6:
+Time record(seconds)
+total_time : 0.020837
+transfer_time : 0.006114
+kernel_time : 0.007778
+graph_block : 2
+kernel_exe_times : 9
+Pass 7:
+Time record(seconds)
+total_time : 0.018526
+transfer_time : 0.005969
+kernel_time : 0.005765
+graph_block : 2
+kernel_exe_times : 9
+Pass 8:
+Time record(seconds)
+total_time : 0.019941
+transfer_time : 0.006066
+kernel_time : 0.006894
+graph_block : 2
+kernel_exe_times : 9
+Pass 9:
+Time record(seconds)
+total_time : 0.019529
+transfer_time : 0.006024
+kernel_time : 0.006678
+graph_block : 2
+kernel_exe_times : 9
+kernelfilename is p���Z
+Successfully initialized OpenCL context on:
+  Platform 2: Intel(R) OpenCL HD Graphics
+  Device 0: Intel(R) Graphics [0x46a6]
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 800000
+边数: 10328000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 2
+▌ 平台名称: Intel(R) OpenCL HD Graphics
+▌ 设备索引: 0
+▌ 设备名称: Intel(R) Graphics [0x46a6]
+▌ 计算单元: 96
+▌ 编译选项: -cl-single-precision-constant
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.141804 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.024270
+transfer_time : 0.006223
+kernel_time : 0.008197
+graph_block : 3
+kernel_exe_times : 10
+Pass 1:
+Time record(seconds)
+total_time : 0.020121
+transfer_time : 0.005990
+kernel_time : 0.006979
+graph_block : 3
+kernel_exe_times : 10
+Pass 2:
+Time record(seconds)
+total_time : 0.019953
+transfer_time : 0.006067
+kernel_time : 0.006999
+graph_block : 3
+kernel_exe_times : 10
+Pass 3:
+Time record(seconds)
+total_time : 0.021098
+transfer_time : 0.005994
+kernel_time : 0.008260
+graph_block : 3
+kernel_exe_times : 10
+Pass 4:
+Time record(seconds)
+total_time : 0.021179
+transfer_time : 0.006076
+kernel_time : 0.008286
+graph_block : 3
+kernel_exe_times : 10
+Pass 5:
+Time record(seconds)
+total_time : 0.020106
+transfer_time : 0.005994
+kernel_time : 0.007107
+graph_block : 3
+kernel_exe_times : 10
+Pass 6:
+Time record(seconds)
+total_time : 0.019390
+transfer_time : 0.006039
+kernel_time : 0.006377
+graph_block : 3
+kernel_exe_times : 10
+Pass 7:
+Time record(seconds)
+total_time : 0.018934
+transfer_time : 0.006014
+kernel_time : 0.006094
+graph_block : 3
+kernel_exe_times : 10
+Pass 8:
+Time record(seconds)
+total_time : 0.018561
+transfer_time : 0.006092
+kernel_time : 0.005793
+graph_block : 3
+kernel_exe_times : 10
+Pass 9:
+Time record(seconds)
+total_time : 0.018394
+transfer_time : 0.005998
+kernel_time : 0.005721
+graph_block : 3
+kernel_exe_times : 10
+kernelfilename is p����a
+Successfully initialized OpenCL context on:
+  Platform 2: Intel(R) OpenCL HD Graphics
+  Device 0: Intel(R) Graphics [0x46a6]
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 800000
+边数: 10328000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 2
+▌ 平台名称: Intel(R) OpenCL HD Graphics
+▌ 设备索引: 0
+▌ 设备名称: Intel(R) Graphics [0x46a6]
+▌ 计算单元: 96
+▌ 编译选项: -cl-single-precision-constant
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.145293 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.022332
+transfer_time : 0.006278
+kernel_time : 0.006629
+graph_block : 1
+kernel_exe_times : 9
+Pass 1:
+Time record(seconds)
+total_time : 0.018383
+transfer_time : 0.006044
+kernel_time : 0.005748
+graph_block : 1
+kernel_exe_times : 9
+Pass 2:
+Time record(seconds)
+total_time : 0.019308
+transfer_time : 0.005872
+kernel_time : 0.006776
+graph_block : 1
+kernel_exe_times : 9
+Pass 3:
+Time record(seconds)
+total_time : 0.018619
+transfer_time : 0.005954
+kernel_time : 0.006024
+graph_block : 1
+kernel_exe_times : 9
+Pass 4:
+Time record(seconds)
+total_time : 0.019264
+transfer_time : 0.005979
+kernel_time : 0.006687
+graph_block : 1
+kernel_exe_times : 9
+Pass 5:
+Time record(seconds)
+total_time : 0.018188
+transfer_time : 0.005918
+kernel_time : 0.005816
+graph_block : 1
+kernel_exe_times : 9
+Pass 6:
+Time record(seconds)
+total_time : 0.018295
+transfer_time : 0.006010
+kernel_time : 0.005774
+graph_block : 1
+kernel_exe_times : 9
+Pass 7:
+Time record(seconds)
+total_time : 0.019133
+transfer_time : 0.006003
+kernel_time : 0.006562
+graph_block : 1
+kernel_exe_times : 9
+Pass 8:
+Time record(seconds)
+total_time : 0.019375
+transfer_time : 0.006075
+kernel_time : 0.006661
+graph_block : 1
+kernel_exe_times : 9
+Pass 9:
+Time record(seconds)
+total_time : 0.018390
+transfer_time : 0.006025
+kernel_time : 0.005749
+graph_block : 1
+kernel_exe_times : 9
+kernelfilename is p� _X
+Successfully initialized OpenCL context on:
+  Platform 2: Intel(R) OpenCL HD Graphics
+  Device 0: Intel(R) Graphics [0x46a6]
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 800000
+边数: 10328000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 2
+▌ 平台名称: Intel(R) OpenCL HD Graphics
+▌ 设备索引: 0
+▌ 设备名称: Intel(R) Graphics [0x46a6]
+▌ 计算单元: 96
+▌ 编译选项: -cl-single-precision-constant
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.149681 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.023238
+transfer_time : 0.006355
+kernel_time : 0.007029
+graph_block : 3
+kernel_exe_times : 11
+Pass 1:
+Time record(seconds)
+total_time : 0.020352
+transfer_time : 0.006171
+kernel_time : 0.006990
+graph_block : 3
+kernel_exe_times : 11
+Pass 2:
+Time record(seconds)
+total_time : 0.019105
+transfer_time : 0.006092
+kernel_time : 0.005951
+graph_block : 3
+kernel_exe_times : 11
+Pass 3:
+Time record(seconds)
+total_time : 0.019253
+transfer_time : 0.006061
+kernel_time : 0.006174
+graph_block : 3
+kernel_exe_times : 11
+Pass 4:
+Time record(seconds)
+total_time : 0.019373
+transfer_time : 0.006288
+kernel_time : 0.005991
+graph_block : 3
+kernel_exe_times : 11
+Pass 5:
+Time record(seconds)
+total_time : 0.020073
+transfer_time : 0.006187
+kernel_time : 0.006883
+graph_block : 3
+kernel_exe_times : 11
+Pass 6:
+Time record(seconds)
+total_time : 0.019869
+transfer_time : 0.006185
+kernel_time : 0.006900
+graph_block : 3
+kernel_exe_times : 11
+Pass 7:
+Time record(seconds)
+total_time : 0.020095
+transfer_time : 0.006143
+kernel_time : 0.006978
+graph_block : 3
+kernel_exe_times : 11
+Pass 8:
+Time record(seconds)
+total_time : 0.020002
+transfer_time : 0.006204
+kernel_time : 0.006922
+graph_block : 3
+kernel_exe_times : 11
+Pass 9:
+Time record(seconds)
+total_time : 0.020006
+transfer_time : 0.006191
+kernel_time : 0.006966
+graph_block : 3
+kernel_exe_times : 11
+kernelfilename is p�0i.\
+Successfully initialized OpenCL context on:
+  Platform 2: Intel(R) OpenCL HD Graphics
+  Device 0: Intel(R) Graphics [0x46a6]
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 800000
+边数: 10328000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 2
+▌ 平台名称: Intel(R) OpenCL HD Graphics
+▌ 设备索引: 0
+▌ 设备名称: Intel(R) Graphics [0x46a6]
+▌ 计算单元: 96
+▌ 编译选项: -cl-single-precision-constant
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.142897 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.021736
+transfer_time : 0.006120
+kernel_time : 0.006034
+graph_block : 2
+kernel_exe_times : 9
+Pass 1:
+Time record(seconds)
+total_time : 0.021400
+transfer_time : 0.005843
+kernel_time : 0.008683
+graph_block : 2
+kernel_exe_times : 9
+Pass 2:
+Time record(seconds)
+total_time : 0.020822
+transfer_time : 0.005888
+kernel_time : 0.008008
+graph_block : 2
+kernel_exe_times : 9
+Pass 3:
+Time record(seconds)
+total_time : 0.022045
+transfer_time : 0.005896
+kernel_time : 0.009208
+graph_block : 2
+kernel_exe_times : 9
+Pass 4:
+Time record(seconds)
+total_time : 0.021133
+transfer_time : 0.005948
+kernel_time : 0.008438
+graph_block : 2
+kernel_exe_times : 9
+Pass 5:
+Time record(seconds)
+total_time : 0.020634
+transfer_time : 0.005889
+kernel_time : 0.007838
+graph_block : 2
+kernel_exe_times : 9
+Pass 6:
+Time record(seconds)
+total_time : 0.020714
+transfer_time : 0.006011
+kernel_time : 0.008029
+graph_block : 2
+kernel_exe_times : 9
+Pass 7:
+Time record(seconds)
+total_time : 0.018515
+transfer_time : 0.005909
+kernel_time : 0.005879
+graph_block : 2
+kernel_exe_times : 9
+Pass 8:
+Time record(seconds)
+total_time : 0.019380
+transfer_time : 0.005934
+kernel_time : 0.006327
+graph_block : 2
+kernel_exe_times : 9
+Pass 9:
+Time record(seconds)
+total_time : 0.019697
+transfer_time : 0.005966
+kernel_time : 0.006979
+graph_block : 2
+kernel_exe_times : 9
+kernelfilename is p�Z�]
+Successfully initialized OpenCL context on:
+  Platform 2: Intel(R) OpenCL HD Graphics
+  Device 0: Intel(R) Graphics [0x46a6]
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 800000
+边数: 10328000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 2
+▌ 平台名称: Intel(R) OpenCL HD Graphics
+▌ 设备索引: 0
+▌ 设备名称: Intel(R) Graphics [0x46a6]
+▌ 计算单元: 96
+▌ 编译选项: -cl-single-precision-constant
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.141533 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.022066
+transfer_time : 0.006148
+kernel_time : 0.006488
+graph_block : 3
+kernel_exe_times : 10
+Pass 1:
+Time record(seconds)
+total_time : 0.018970
+transfer_time : 0.005925
+kernel_time : 0.006316
+graph_block : 3
+kernel_exe_times : 10
+Pass 2:
+Time record(seconds)
+total_time : 0.019609
+transfer_time : 0.005951
+kernel_time : 0.006976
+graph_block : 3
+kernel_exe_times : 10
+Pass 3:
+Time record(seconds)
+total_time : 0.019609
+transfer_time : 0.005923
+kernel_time : 0.006809
+graph_block : 3
+kernel_exe_times : 10
+Pass 4:
+Time record(seconds)
+total_time : 0.018833
+transfer_time : 0.005953
+kernel_time : 0.005803
+graph_block : 3
+kernel_exe_times : 10
+Pass 5:
+Time record(seconds)
+total_time : 0.018941
+transfer_time : 0.005971
+kernel_time : 0.006249
+graph_block : 3
+kernel_exe_times : 10
+Pass 6:
+Time record(seconds)
+total_time : 0.018277
+transfer_time : 0.005885
+kernel_time : 0.005790
+graph_block : 3
+kernel_exe_times : 10
+Pass 7:
+Time record(seconds)
+total_time : 0.018249
+transfer_time : 0.005907
+kernel_time : 0.005822
+graph_block : 3
+kernel_exe_times : 10
+Pass 8:
+Time record(seconds)
+total_time : 0.018133
+transfer_time : 0.005971
+kernel_time : 0.005679
+graph_block : 3
+kernel_exe_times : 10
+Pass 9:
+Time record(seconds)
+total_time : 0.018087
+transfer_time : 0.005934
+kernel_time : 0.005613
+graph_block : 3
+kernel_exe_times : 10
+kernelfilename is p�Sq�_
+Successfully initialized OpenCL context on:
+  Platform 2: Intel(R) OpenCL HD Graphics
+  Device 0: Intel(R) Graphics [0x46a6]
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 800000
+边数: 10328000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 2
+▌ 平台名称: Intel(R) OpenCL HD Graphics
+▌ 设备索引: 0
+▌ 设备名称: Intel(R) Graphics [0x46a6]
+▌ 计算单元: 96
+▌ 编译选项: -cl-single-precision-constant
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.141077 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.021804
+transfer_time : 0.006242
+kernel_time : 0.005892
+graph_block : 3
+kernel_exe_times : 11
+Pass 1:
+Time record(seconds)
+total_time : 0.023745
+transfer_time : 0.005982
+kernel_time : 0.010550
+graph_block : 3
+kernel_exe_times : 11
+Pass 2:
+Time record(seconds)
+total_time : 0.021089
+transfer_time : 0.005995
+kernel_time : 0.008160
+graph_block : 3
+kernel_exe_times : 11
+Pass 3:
+Time record(seconds)
+total_time : 0.020524
+transfer_time : 0.006081
+kernel_time : 0.007364
+graph_block : 3
+kernel_exe_times : 11
+Pass 4:
+Time record(seconds)
+total_time : 0.021909
+transfer_time : 0.006147
+kernel_time : 0.008578
+graph_block : 3
+kernel_exe_times : 11
+Pass 5:
+Time record(seconds)
+total_time : 0.020507
+transfer_time : 0.005996
+kernel_time : 0.007330
+graph_block : 3
+kernel_exe_times : 11
+Pass 6:
+Time record(seconds)
+total_time : 0.021058
+transfer_time : 0.005937
+kernel_time : 0.008312
+graph_block : 3
+kernel_exe_times : 11
+Pass 7:
+Time record(seconds)
+total_time : 0.020695
+transfer_time : 0.005862
+kernel_time : 0.007995
+graph_block : 3
+kernel_exe_times : 11
+Pass 8:
+Time record(seconds)
+total_time : 0.019872
+transfer_time : 0.005872
+kernel_time : 0.007238
+graph_block : 3
+kernel_exe_times : 11
+Pass 9:
+Time record(seconds)
+total_time : 0.021226
+transfer_time : 0.005994
+kernel_time : 0.008351
+graph_block : 3
+kernel_exe_times : 11
+kernelfilename is p�Р�c
+Successfully initialized OpenCL context on:
+  Platform 2: Intel(R) OpenCL HD Graphics
+  Device 0: Intel(R) Graphics [0x46a6]
+Reading graph file
+====== 文件头信息 ======
+魔数         0x47535246
+节点数: 800000
+边数: 10328000
+填充字段: 0
+
+文件验证通过，数据结构完整
+
+[OpenCL编译环境]
+▌ 平台索引: 2
+▌ 平台名称: Intel(R) OpenCL HD Graphics
+▌ 设备索引: 0
+▌ 设备名称: Intel(R) Graphics [0x46a6]
+▌ 计算单元: 96
+▌ 编译选项: -cl-single-precision-constant
+▌ 内核文件: ../src/bfs_kernel.cl
+
+✔ 成功编译内核: kernel1, kernel2
+-----------------------------------
+compile_opencl_time is 0.151739 seconds
+Running bfs_cuda
+Pass 0:
+Time record(seconds)
+total_time : 0.022161
+transfer_time : 0.006453
+kernel_time : 0.005990
+graph_block : 2
+kernel_exe_times : 9
+Pass 1:
+Time record(seconds)
+total_time : 0.019250
+transfer_time : 0.006241
+kernel_time : 0.006013
+graph_block : 2
+kernel_exe_times : 9
+Pass 2:
+Time record(seconds)
+total_time : 0.019025
+transfer_time : 0.006038
+kernel_time : 0.005890
+graph_block : 2
+kernel_exe_times : 9
+Pass 3:
+Time record(seconds)
+total_time : 0.019076
+transfer_time : 0.006051
+kernel_time : 0.006010
+graph_block : 2
+kernel_exe_times : 9
+Pass 4:
+Time record(seconds)
+total_time : 0.021189
+transfer_time : 0.006136
+kernel_time : 0.007949
+graph_block : 2
+kernel_exe_times : 9
+Pass 5:
+Time record(seconds)
+total_time : 0.019978
+transfer_time : 0.006123
+kernel_time : 0.006814
+graph_block : 2
+kernel_exe_times : 9
+Pass 6:
+Time record(seconds)
+total_time : 0.019683
+transfer_time : 0.006121
+kernel_time : 0.006832
+graph_block : 2
+kernel_exe_times : 9
+Pass 7:
+Time record(seconds)
+total_time : 0.018821
+transfer_time : 0.006093
+kernel_time : 0.006003
+graph_block : 2
+kernel_exe_times : 9
+Pass 8:
+Time record(seconds)
+total_time : 0.019832
+transfer_time : 0.006194
+kernel_time : 0.006974
+graph_block : 2
+kernel_exe_times : 9
+Pass 9:
+Time record(seconds)
+total_time : 0.018621
+transfer_time : 0.006029
+kernel_time : 0.005925
+graph_block : 2
+kernel_exe_times : 9

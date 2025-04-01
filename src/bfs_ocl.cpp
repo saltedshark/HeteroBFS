@@ -158,7 +158,12 @@ int main(int argc, char** argv){
 	auto end_t = high_resolution_clock::now();
 	auto duration = duration_cast<microseconds>(end_t - start_t);
 	double duration_t = double(duration.count()) * microseconds::period::num / microseconds::period::den;
-	printf("compile_opencl_time is %f seconds\n",duration_t);
+	printf("compile_opencl_time : %f\n",duration_t);
+
+	//时间统输出一记录
+    printf("Time record(seconds)\n");
+    printf("total_time : %f\n", total_time);
+    
 
     //执行passes次，根据参数判断使用啥程序，普通还是uvm相关
     printf("Running bfs_cuda\n");
