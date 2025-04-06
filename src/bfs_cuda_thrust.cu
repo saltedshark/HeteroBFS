@@ -745,7 +745,7 @@ float BFSGraphUnifiedMemory(OptionParser &op, cudaDeviceProp &deviceProp, int no
     //时间统输出一记录
     printf("Time record(seconds)\n");
     printf("total_time : %f\n", total_time);
-    printf("transfer_time : %f\n", transfer_time);
+    // printf("transfer_time : %f\n", transfer_time);
     printf("kernel_time : %f\n", kernel_time);
     printf("graph_block : %d\n", cnt);
     printf("kernel_exe_times : %d\n", k);

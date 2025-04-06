@@ -12,6 +12,8 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
+num=5 #控制程序执行次数的参数
+
 # 用户自定义区（只需修改这里）=========================================
 # 13种执行配置
 #   seq 1
@@ -26,104 +28,104 @@ fi
 # 程序1配置
 # Usage: ./bfs_seq <passes> <input_file>
 PROG1_NAME="bfs_seq"      # 程序1名称
-PROG1_ARGS="10"             # 程序1专用参数
+PROG1_ARGS="${num}"             # 程序1专用参数
 PROG1_OUT="seq"         # 程序1输出文件名
 
 # 程序2配置 
 # Usage: ./bfs_omp <passes> <num_omp_threads> <input_file> 
 # 使用16线程
 PROG2_NAME="bfs_omp"         # 程序2名称
-PROG2_ARGS="10 16"        # 程序2专用参数
+PROG2_ARGS="${num} 16"        # 程序2专用参数
 PROG2_OUT="omp"
 
 #bfs_cuda
 #./bfs_cuda -n 10 -i filepath
 # 程序3配置
 PROG3_NAME="bfs_cuda"
-PROG3_ARGS="-n 10 -i"
+PROG3_ARGS="-n ${num} -i"
 PROG3_OUT="cuda"
 
-# 程序4配置
-PROG4_NAME="bfs_cuda"
-PROG4_ARGS="-n 10 --uvm -i"
-PROG4_OUT="cuda-uvm"
-
-# 程序5配置
-PROG5_NAME="bfs_cuda"
-PROG5_ARGS="-n 10 --uvm-advise -i"
-PROG5_OUT="cuda-uvm-advise"
-
-# 程序6配置
-PROG6_NAME="bfs_cuda"
-PROG6_ARGS="-n 10 --uvm-prefetch-advise -i"
-PROG6_OUT="cuda-uvm-prefetch-advise"
-
 #bfs_cuda_edge
-#./bfs_cuda_edge -n 10 -i filepath
+#./bfs_cuda_edge -n ${num} -i filepath
 # 程序7配置
-PROG7_NAME="bfs_cuda_edge"
-PROG7_ARGS="-n 10 -i"
-PROG7_OUT="cuda-edge"
+PROG4_NAME="bfs_cuda_edge"
+PROG4_ARGS="-n ${num} -i"
+PROG4_OUT="cuda-edge"
 
-# 程序8配置
-PROG8_NAME="bfs_cuda_edge"
-PROG8_ARGS="-n 10 --uvm -i"
-PROG8_OUT="cuda-edge-uvm"
+# 程序15配置
+# bfs_cuda_edge优化版本，设备排序+thrust设备查找
+PROG5_NAME="bfs_cuda_edge_opt_thrust"
+PROG5_ARGS="-n ${num} -i"
+PROG5_OUT="cuda-edge-opt-thrust"
+# 程序16配置
+# bfs_cuda优化版本，thrust设备查找
+PROG6_NAME="bfs_cuda_thrust"
+PROG6_ARGS="-n ${num} -i"
+PROG6_OUT="cuda-thrust"
+
+# 程序4配置
+# PROG4_NAME="bfs_cuda"
+# PROG4_ARGS="-n ${num} --uvm -i"
+# PROG4_OUT="cuda-uvm"
+
+# # 程序5配置
+# PROG5_NAME="bfs_cuda"
+# PROG5_ARGS="-n ${num} --uvm-advise -i"
+# PROG5_OUT="cuda-uvm-advise"
+
+# # 程序6配置
+# PROG6_NAME="bfs_cuda"
+# PROG6_ARGS="-n ${num} --uvm-prefetch-advise -i"
+# PROG6_OUT="cuda-uvm-prefetch-advise"
+
+# # 程序8配置
+# PROG8_NAME="bfs_cuda_edge"
+# PROG8_ARGS="-n ${num} --uvm -i"
+# PROG8_OUT="cuda-edge-uvm"
 
 # # 程序9配置
 # PROG9_NAME="bfs_cuda_edge"
-# PROG9_ARGS="-n 10 --uvm-advise -i"
+# PROG9_ARGS="-n ${num} --uvm-advise -i"
 # PROG9_OUT="cuda-edge-uvm-advise"
 
 # # 程序10配置
 # PROG10_NAME="bfs_cuda_edge"
-# PROG10_ARGS="-n 10 --uvm-prefetch-advise -i"
+# PROG10_ARGS="-n ${num} --uvm-prefetch-advise -i"
 # PROG10_OUT="cuda-edge-uvm-prefetch-advise"
-
 
 #bfs_ocl
 #./bfs_ocl -p 1/2/3 -d 0 -n 10 -i filepath
 # 这里的123需根据clinfo -l进行调整
 # 程序11配置
-PROG11_NAME="bfs_ocl"
-PROG11_ARGS="-p 1 -d 0 -n 10 -i"
-PROG11_OUT="ocl-cpu"
+# PROG11_NAME="bfs_ocl"
+# PROG11_ARGS="-p 1 -d 0 -n ${num} -i"
+# PROG11_OUT="ocl-cpu"
 
-# 程序12配置
-PROG12_NAME="bfs_ocl"
-PROG12_ARGS="-p 2 -d 0 -n 10 -i"
-PROG12_OUT="ocl-igpu"
+# # 程序12配置
+# PROG12_NAME="bfs_ocl"
+# PROG12_ARGS="-p 2 -d 0 -n ${num} -i"
+# PROG12_OUT="ocl-igpu"
 
-# 程序13配置
-PROG13_NAME="bfs_ocl"
-PROG13_ARGS="-p 3 -d 0 -n 10 -i"
-PROG13_OUT="ocl-ngpu"
+# # 程序13配置
+# PROG13_NAME="bfs_ocl"
+# PROG13_ARGS="-p 3 -d 0 -n ${num} -i"
+# PROG13_OUT="ocl-ngpu"
 
-# 程序14配置
-# bfs_cuda_edge优化版本，设备排序
-PROG14_NAME="bfs_cuda_edge_opt"
-PROG14_ARGS="-n 10 -i"
-PROG14_OUT="cuda-edge-opt"
-# 程序15配置
-# bfs_cuda_edge优化版本，设备排序+thrust设备查找
-PROG15_NAME="bfs_cuda_edge_opt_thrust"
-PROG15_ARGS="-n 10 -i"
-PROG15_OUT="cuda-edge-opt-thrust"
-# 程序16配置
-# bfs_cuda优化版本，thrust设备查找
-PROG16_NAME="bfs_cuda_thrust"
-PROG16_ARGS="-n 10 -i"
-PROG16_OUT="cuda-thrust"
+# # 程序14配置
+# # bfs_cuda_edge优化版本，设备排序
+# PROG14_NAME="bfs_cuda_edge_opt"
+# PROG14_ARGS="-n ${num} -i"
+# PROG14_OUT="cuda-edge-opt"
 
 # # 程序17配置
 # # omp优化版本1,分离
 # PROG17_NAME="bfs_omp_o1"
-# PROG17_ARGS="10 16"
+# PROG17_ARGS="${num} 16"
 # PROG17_OUT="omp-o1"
 # # 程序18配置
 # #omp 优化版本2
 # PROG18_NAME="bfs_omp_o2"
-# PROG18_ARGS="10 16"
+# PROG18_ARGS="${num} 16"
 # PROG18_OUT="omp-o2"
 
 
@@ -150,7 +152,7 @@ for graph_dir in "${filepath}"/graph*; do
             filename=$(basename "$data_file")
             
             # 遍历所有程序配置
-            for prog_num in {1..16}; do
+            for prog_num in {1..6}; do
                 # 动态获取变量值
                 prog_name_var="PROG${prog_num}_NAME"
                 prog_args_var="PROG${prog_num}_ARGS"

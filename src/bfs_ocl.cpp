@@ -131,7 +131,7 @@ int main(int argc, char** argv){
 	//kernel文件名
 	std::string kernelfile = op.getOptionString("kernelFile");
 
-	printf("kernelfilename is %s\n", kernelfile);
+	printf("kernelfilename is %s\n", kernelfile.c_str());
 
 	//初始化环境
 	//ocd_initCL该函数初始化opencl环境，包括选择设备、创建计算环境等
@@ -147,6 +147,9 @@ int main(int argc, char** argv){
     //读文件获取信息
 	initGraph(inputfile, no_of_nodes, edge_list_size, offsets, edges);
 
+
+	printf("读图完毕\n");
+
 	//进行动态编译并记录时间
 	auto start_t = high_resolution_clock::now();
 
@@ -158,15 +161,14 @@ int main(int argc, char** argv){
 	auto end_t = high_resolution_clock::now();
 	auto duration = duration_cast<microseconds>(end_t - start_t);
 	double duration_t = double(duration.count()) * microseconds::period::num / microseconds::period::den;
-	printf("compile_opencl_time : %f\n",duration_t);
+	
 
 	//时间统输出一记录
     printf("Time record(seconds)\n");
-    printf("total_time : %f\n", total_time);
-    
+    printf("compile_opencl_time : %f\n",duration_t);
 
     //执行passes次，根据参数判断使用啥程序，普通还是uvm相关
-    printf("Running bfs_cuda\n");
+    printf("Running bfs_ocl\n");
 	for (int i = 0; i < passes; i++) {
         printf("Pass %d:\n", i);
 		ocl(no_of_nodes, edge_list_size, offsets, edges,
@@ -200,7 +202,7 @@ void opinit(OptionParser &op){
 	op.addOption("device", OPT_VECINT, "0", "specify device to run on", 'd');
 	//0 for default device
 	op.addOption("localworksize", OPT_VECINT, "0", "specify localWorkSize to run on", 'l');
-	op.addOption("kernelFile", OPT_STRING, "../src/bfs_kernel.cl", "kernel file", 'k');
+	op.addOption("kernelFile", OPT_STRING, "/home/ss/projects/HeteroBFS/src/bfs_kernel.cl", "kernel file", 'k');
 	//可指定编译kernel文件的名字,默认为bfs_kernel.cl
 }
 
@@ -426,11 +428,17 @@ void ocd_initCL(int platform_id, int device_id, cl_context &context, cl_command_
     char platform_name[128];
     clGetPlatformInfo(platforms[platform_index], CL_PLATFORM_NAME, 128, platform_name, NULL);
     printf("%s\n", platform_name);
+
     
     printf("  Device %u: ", device_index);
     char device_name[128];
     clGetDeviceInfo(devices[device_index], CL_DEVICE_NAME, 128, device_name, NULL);
     printf("%s\n", device_name);
+
+	cl_ulong device_mem;
+    clGetDeviceInfo(devices[device_index], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(cl_ulong), &device_mem,NULL);
+	printf("设备总内存是：%.2fGB\n",device_mem/1024.0/1024/1024);
+
 
     // 清理资源
     free(platforms);
@@ -537,6 +545,7 @@ void ocl(int no_of_nodes, int edge_list_size, uint32_t *&h_offsets, uint32_t *&h
 	int offsets_size = sizeof(uint32_t) * (no_of_nodes + 1);
 	int edges_size = sizeof(uint32_t) * edge_list_size;
 
+	
 
 	cl_int err;
 	cl_event ocdTempEvent;
@@ -614,6 +623,8 @@ void ocl(int no_of_nodes, int edge_list_size, uint32_t *&h_offsets, uint32_t *&h
 	size_t localWorkSize[1];
 	GetOptimalWorkSize(context, device, no_of_nodes, localWork, WorkSize, localWorkSize);
 	
+	printf("WorkSize is %lu\n",WorkSize[0]);
+	printf("localWorkSize is %lu\n",localWorkSize[0]);
 
 	//遍历所有节点，未访问就进入遍历
 	//这里是顺序的
@@ -621,6 +632,7 @@ void ocl(int no_of_nodes, int edge_list_size, uint32_t *&h_offsets, uint32_t *&h
 	int k = 0;//记录kernel执行次数
 	for(int i = 0; i < no_of_nodes; i++){
 		if(!h_graph_visited[i]){
+			printf("visit node : %d\n", i);
 			++cnt;
 			bfs_opencl(no_of_nodes, i,
 				h_graph_mask, h_graph_visited, h_cost, 
@@ -704,6 +716,8 @@ void bfs_opencl(int no_of_nodes, int source,
 	getElapsedTime(elapsedTime, ocdEvent);
 	transfer_time += elapsedTime;
 
+	//开始执行kernel
+	printf("开始执行kernel\n");
 	bool stop;
 	do
 	{
@@ -714,6 +728,7 @@ void bfs_opencl(int no_of_nodes, int source,
 		getElapsedTime(elapsedTime, ocdEvent);
 		transfer_time += elapsedTime;
 
+		printf("开始执行kernel1\n");
 		//Run Kernel1 
 		cl_int err = clEnqueueNDRangeKernel(commands, kernel1, 1, NULL,
 				WorkSize, localWorkSize, 0, NULL, &ocdEvent);
@@ -724,6 +739,7 @@ void bfs_opencl(int no_of_nodes, int source,
 		if(err != CL_SUCCESS)
 			printf("Error occurred running kernel1.(%d)\n", err);
 		
+		printf("开始执行kernel2\n");
 		//Run Kernel 2
 		err = clEnqueueNDRangeKernel(commands, kernel2, 1, NULL,
 				WorkSize, localWorkSize, 0, NULL, &ocdEvent);
@@ -743,6 +759,7 @@ void bfs_opencl(int no_of_nodes, int source,
 		k++;
 	}while(stop);
 
+	printf("kernel执行完毕\n");
 	//三个状态数组
 	//d_graph_mask无需拷贝回去，外面没用到，留在设备上共享就行
 	//d_updating_graph_mask也无需拷贝回去，只有kernel内用到
@@ -772,11 +789,13 @@ void GetOptimalWorkSize(const cl_context &context, int device, int no_of_nodes, 
 	std::vector<cl_device_id> devices = get_context_devices(context);
 	cl_device_id device_id = devices[device];
 	//查询设备各维度的线程数限制
-	cl_int err = clGetDeviceInfo(device_id,CL_DEVICE_MAX_WORK_ITEM_SIZES,sizeof(size_t)*3, &maxThreads, NULL);
+	cl_int err = clGetDeviceInfo(device_id, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(size_t)*3, &maxThreads, NULL);
 	CHKERR(err, "Error checking for work item sizes\n");
 	size_t maxWorkGroupSize;
 	//查询单个工作组中所有维度的总线程数上限
 	clGetDeviceInfo(device_id, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &maxWorkGroupSize, NULL);
+
+	
 	//检查localWork合法性
 	//参数内有localWork，用户未指定时默认值为0
 	//maxThreads对应cuda的blockDim.x的最大值
