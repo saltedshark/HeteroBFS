@@ -15,7 +15,7 @@ fi
 filepath="$1"
 script_dir=$(cd "$(dirname "$0")" && pwd)
 #存放去除异常值结果的文件夹路径
-result_dir=/home/ss/projects/HeteroBFS/result_handle/result_rm_outlier
+result_dir=${script_dir}/../result_handle/result_rm_outlier
 
 # 遍历文件结构
 for graph_dir in "${filepath}"/graph*; do
