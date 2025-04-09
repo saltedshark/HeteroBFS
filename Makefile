@@ -37,6 +37,10 @@ CUGRAPH_LDFLAGS := -L$(CONDA_PREFIX)/lib \
                    -lcudart \
                    -Xlinker "-rpath,$(CONDA_PREFIX)/lib"
 
+# 新增混合程序专用选项
+MIXED_CUDA_NVCCFLAGS := $(CUDA_NVCCFLAGS) -Xcompiler -fopenmp
+MIXED_CUDA_LDFLAGS := $(CUDA_LDFLAGS) -lgomp
+
 # OpenCL配置
 OPENCL_CXXFLAGS := -I/usr/include/CL       # 根据实际头文件路径调整
 OPENCL_LDFLAGS := -lOpenCL                 # 链接 OpenCL 库
@@ -74,22 +78,31 @@ OPENMP_PROGRAMS := bfs_omp  bfs_omp_o1 bfs_omp_o2 # 需要OpenMP但不依赖SNAP
 SNAP_PROGRAMS := testsnap graph_gen
 # cuGraph 程序列表
 CUGraph_CUDA_PROGRAMS := bfs_cugraph bfs_cugraph_v
+# 新增混合程序目标（假设主文件名为 select_seq_omp_cuda.cu）
+MIXED_PROGRAMS := select_seq_omp_cuda
+MIXED_CUDA_SOURCES := $(addprefix $(SRC_DIR)/, $(addsuffix .cu, $(MIXED_PROGRAMS)))
 
 # ------------------------- CUDA 程序分类 -------------------------
 # 所有 CUDA 源文件
 ALL_CUDA_SOURCES := $(wildcard $(SRC_DIR)/*.cu)
 # 分类cuda源文件
 CUGraph_CUDA_SOURCES := $(addprefix $(SRC_DIR)/, $(addsuffix .cu, $(CUGraph_CUDA_PROGRAMS)))
-COMMON_CUDA_SOURCES := $(filter-out $(CUGraph_CUDA_SOURCES), $(ALL_CUDA_SOURCES))
+# COMMON_CUDA_SOURCES := $(filter-out $(CUGraph_CUDA_SOURCES), $(ALL_CUDA_SOURCES))
+# 更新目标分类
+# COMMON_CUDA_SOURCES := $(filter-out $(CUGraph_CUDA_SOURCES), $(ALL_CUDA_SOURCES)) $(MIXED_CUDA_SOURCES)
+COMMON_CUDA_SOURCES := $(filter-out $(CUGraph_CUDA_SOURCES) $(MIXED_CUDA_SOURCES), $(ALL_CUDA_SOURCES))
+
 
 # 生成可执行文件列表
 CUGraph_CUDA_EXECUTABLES := $(patsubst $(SRC_DIR)/%.cu, $(BIN_DIR)/%, $(CUGraph_CUDA_SOURCES))
+MIXED_CUDA_EXECUTABLES := $(patsubst $(SRC_DIR)/%.cu, $(BIN_DIR)/%, $(MIXED_CUDA_SOURCES))
 COMMON_CUDA_EXECUTABLES := $(patsubst $(SRC_DIR)/%.cu, $(BIN_DIR)/%, $(COMMON_CUDA_SOURCES))
 
 
 # ------------------------- 编译规则 -------------------------
 # 主目标：编译所有程序（包含CUDA）
-all: $(EXECUTABLES) $(COMMON_CUDA_EXECUTABLES) $(CUGraph_CUDA_EXECUTABLES)
+# all: $(EXECUTABLES) $(COMMON_CUDA_EXECUTABLES) $(CUGraph_CUDA_EXECUTABLES)
+all: $(EXECUTABLES) $(COMMON_CUDA_EXECUTABLES) $(CUGraph_CUDA_EXECUTABLES) $(MIXED_CUDA_EXECUTABLES)
 
 # #公共include文件
 # 编译include目录下的C++实现文件（如OptionParser.cpp）
@@ -114,6 +127,11 @@ $(CUGraph_CUDA_EXECUTABLES): $(BIN_DIR)/%: $(SRC_DIR)/%.cu $(CPP_OBJS) | $(BIN_D
     exit 1;}
 	$(NVCC) $(CUGRAPH_NVCCFLAGS) $< $(CPP_OBJS) -o $@ $(CUGRAPH_LDFLAGS)
 
+
+# 混合 CUDA+OpenMP 程序规则（单独使用 OpenMP 选项）
+$(MIXED_CUDA_EXECUTABLES): $(BIN_DIR)/%: $(SRC_DIR)/%.cu $(CPP_OBJS) | $(BIN_DIR)
+	@echo "=== 编译混合 CUDA+OpenMP 程序 [$@] ==="
+	$(NVCC) $(MIXED_CUDA_NVCCFLAGS) $< $(CPP_OBJS) -o $@ $(MIXED_CUDA_LDFLAGS)
 
 # 普通 CUDA 程序规则
 $(COMMON_CUDA_EXECUTABLES): $(BIN_DIR)/%: $(SRC_DIR)/%.cu $(CPP_OBJS) | $(BIN_DIR)
