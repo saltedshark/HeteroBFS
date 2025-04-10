@@ -299,12 +299,20 @@ int select(int no_of_nodes, int edge_list_size){
     int proc = 1;//默认为seq
     //先计算平均度
     double average_d = (edge_list_size * 1.0) / no_of_nodes;//d=2m/n, edge_list_size本身已经是实际边的2倍了
-
+    
+    
     //计算ln(n)然后进行选择
-    double  d = std::log(no_of_nodes);//cmath
-    if(average_d < 0.7 * d){//<=0.7lnn，均同一逻辑，1M内选择seq，1M～10Mcuda
+    double  d = std::log(no_of_nodes);//cmath for lnn
+    double limit1 = std::round(0.7 * d * 100.0) / 100.0;
+    double limit2 = std::round(0.85 * d * 100.0) / 100.0;
+
+    // printf("average_degree : %f\n",average_d);
+    // printf("limit1 is %f\n", limit1);
+    // printf("limit2 is %f\n", limit2);
+
+    if(average_d < limit1){//<0.7lnn，均同一逻辑，1M内选择seq，1M～10Mcuda
         proc = no_of_nodes < 1000000 ? 1 : 3;//< 1M seq else cuda
-    }else if(average_d < 0.85 * d){
+    }else if(average_d < limit2){
         // >= 0.7lnn && <0.85 lnn
         proc = no_of_nodes < 1000000 ? 2 : 3;//1M omp else cuda
     }else{
